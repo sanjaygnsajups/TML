@@ -7,16 +7,26 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .block {
-      min-width: 120px;
-      padding: 10px;
+      min-width: 100px;
+      padding: 8px;
       background-color: #bbf7d0;
       border: 2px solid #38bdf8;
       border-radius: 10px;
       text-align: center;
       transition: transform 0.3s ease;
+      font-size: 0.875rem;
     }
     .block:hover {
       transform: scale(1.05);
+    }
+    .remove-btn {
+      background-color: #ef4444;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-size: 0.75rem;
+      margin-top: 4px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -25,18 +35,18 @@
     <h1 class="text-3xl font-bold mb-6 text-center text-green-700">🌟 TML Bonus Visual Tool</h1>
 
     <div class="mb-4 text-center">
-      <button onclick="addBlock(true)" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">➕ Add You (Level 0)</button>
+      <p class="text-lg font-semibold mb-2">Enter Your Name and Direct Sales PV</p>
+      <div class="flex flex-col sm:flex-row justify-center gap-4 mb-4">
+        <input type="text" id="yourName" placeholder="Your Name" class="border p-2 rounded w-full sm:w-1/3">
+        <input type="number" id="directPV" placeholder="Direct Sales PV (e.g. 250000)" class="border p-2 rounded w-full sm:w-1/3">
+      </div>
+      <button onclick="addBlock(true)" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">➕ Add Your Block (Level 0)</button>
       <button onclick="addBlock(false)" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded ml-2">➕ Add Member Block</button>
-      <p class="text-sm text-gray-500">Add yourself and team members with product values and levels</p>
     </div>
 
-    <div id="tree" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8"></div>
+    <div id="tree" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-8"></div>
 
     <div class="grid grid-cols-1 gap-4 mb-4">
-      <label>Direct Sales PV:
-        <input type="number" id="directPV" placeholder="100000" class="border p-2 rounded w-full">
-      </label>
-
       <label>TML Monthly Company Profit (₹):
         <input type="number" id="companyProfit" placeholder="100000" class="border p-2 rounded w-full">
       </label>
@@ -93,16 +103,80 @@
       const div = document.createElement('div');
       div.className = 'block';
       div.innerHTML = `
-        <input placeholder="${isSelf ? 'You (Self)' : 'Name'}" class="w-full p-1 mb-1 border rounded" ${isSelf ? 'readonly' : ''} />
+        <input placeholder="${isSelf ? document.getElementById('yourName').value || 'You (Self)' : 'Name'}" class="w-full p-1 mb-1 border rounded" ${isSelf ? 'readonly' : ''} />
         <select class="productValue w-full p-1 border rounded">
           <option value="250000">TT (₹2.5L)</option>
           <option value="300000">UTS (₹3L)</option>
         </select>
         <select class="level w-full p-1 mt-1 border rounded">
           ${isSelf ? '<option value="0">Level 0 (You)</option>' : '<option value="1">Level 1</option><option value="2">Level 2</option><option value="3">Level 3</option><option value="4">Level 4</option><option value="5">Level 5</option><option value="6">Level 6</option>'}
-        </select>`;
+        </select>
+        <div class="remove-btn" onclick="this.parentElement.remove()">Remove</div>
+      `;
       tree.appendChild(div);
       blockCount++;
+    }
+
+    function calculateBonuses() {
+      const directPV = parseFloat(document.getElementById('directPV').value) || 0;
+      const blocks = document.querySelectorAll('#tree .block');
+      let levelPVs = [0, 0, 0, 0, 0, 0, 0];
+      let totalUnits = 0;
+
+      blocks.forEach(block => {
+        const level = parseInt(block.querySelector('.level').value);
+        const pv = parseFloat(block.querySelector('.productValue').value);
+        if (!isNaN(level) && !isNaN(pv)) {
+          levelPVs[level] += pv;
+          totalUnits++;
+        }
+      });
+
+      const totalPV = directPV + levelPVs.slice(1).reduce((a, b) => a + b, 0);
+      const retailIncome = directPV * 0.08;
+      const teamIncome = levelPVs[1] * 0.04 + levelPVs[2] * 0.03 + levelPVs[3] * 0.03 + levelPVs[4] * 0.02 + levelPVs[6] * 0.02;
+
+      // Determine leadership rank based on PV
+      let rank = 'None';
+      let rankPercent = 0;
+      if (totalPV >= 9000000) { rank = '5 Star (15%)'; rankPercent = 15; }
+      else if (totalPV >= 7500000) { rank = '4 Star (11%)'; rankPercent = 11; }
+      else if (totalPV >= 6000000) { rank = '3 Star (7.5%)'; rankPercent = 7.5; }
+      else if (totalPV >= 4500000) { rank = '2 Star (4.5%)'; rankPercent = 4.5; }
+      else if (totalPV >= 3000000) { rank = '1 Star (2%)'; rankPercent = 2; }
+
+      const leadershipIncome = totalPV * (rankPercent / 100);
+      const genIncome = totalPV * (parseInt(document.getElementById('gen1').value || 0) * 0.02 + parseInt(document.getElementById('gen2').value || 0) * 0.01 + parseInt(document.getElementById('gen3').value || 0) * 0.005);
+      const elitePercent = parseFloat(document.getElementById('eliteRank').value) || 0;
+      const eliteBonus = (parseFloat(document.getElementById('companyProfit').value) || 0) * (elitePercent / 100);
+      const totalBonus = retailIncome + teamIncome + leadershipIncome + genIncome + eliteBonus;
+
+      document.getElementById('totalPV').innerText = totalPV.toFixed(2);
+      document.getElementById('totalUnits').innerText = totalUnits;
+      document.getElementById('retail').innerText = retailIncome.toFixed(2);
+      document.getElementById('team').innerText = teamIncome.toFixed(2);
+      document.getElementById('rankLabel').innerText = rank;
+      document.getElementById('leadership').innerText = leadershipIncome.toFixed(2);
+      document.getElementById('generation').innerText = genIncome.toFixed(2);
+      document.getElementById('elite').innerText = eliteBonus.toFixed(2);
+      document.getElementById('totalBonus').innerText = totalBonus.toFixed(2);
+      document.getElementById('results').classList.remove('hidden');
+    }
+
+    function clearAll() {
+      document.getElementById('yourName').value = '';
+      document.getElementById('directPV').value = '';
+      document.getElementById('companyProfit').value = '';
+      document.getElementById('gen1').value = '';
+      document.getElementById('gen2').value = '';
+      document.getElementById('gen3').value = '';
+      document.getElementById('eliteRank').value = '';
+      document.getElementById('results').classList.add('hidden');
+      document.getElementById('tree').innerHTML = '';
+    }
+
+    function exportToExcel() {
+      alert('Export to Excel functionality will be added in a future version.');
     }
   </script>
 </body>
