@@ -73,12 +73,7 @@ function shareResult() {
 
     
 
-    <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded mb-6">
-      
-  <button onclick="downloadExcel()" class="bg-green-600 text-white px-4 py-2 rounded">📥 Export to Excel</button>
-  <button onclick="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded">📄 Export to PDF</button>
-  <button onclick="shareResult()" class="bg-blue-700 text-white px-4 py-2 rounded">🔗 Share</button>
-</div>
+    
     </div>
 
     <!-- Manual Calculator -->
@@ -128,8 +123,15 @@ function shareResult() {
       <div>👥 Team Income: ₹${teamIncome.toLocaleString()}</div>
       <div>🏆 Leadership Bonus (${rank}): ₹${leadershipBonus.toLocaleString()}</div>
       <div class="font-bold text-lg text-green-700">💰 Total Income: ₹${totalIncome.toLocaleString()}</div>
+
+      <div class="mt-4 space-x-2">
+        <button onclick="downloadExcel()" class="bg-green-600 text-white px-4 py-2 rounded">📥 Export to Excel</button>
+        <button onclick="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded">📄 Export to PDF</button>
+        <button onclick="shareResult()" class="bg-blue-700 text-white px-4 py-2 rounded">🔗 Share</button>
+      </div>
     </div>
   `;
+}
 }
 function clearDownlineInputs() {
   document.getElementById('referrals').value = '';
@@ -150,19 +152,10 @@ function clearManualInputs() {
   document.getElementById('level6').value = '';
   document.getElementById('manualResult').innerHTML = '';
 }
-  const summary = `
-    <div class="mt-4 p-4 rounded bg-yellow-100 dark:bg-yellow-700">
-      <strong>Total Team PV:</strong> ₹${totalPV.toLocaleString()}<br>
-      <strong>Rank Qualified:</strong> ${rank}<br>
-      <strong>Leadership Bonus:</strong> ₹${leadershipBonus.toLocaleString()}
-    </div>`;
-
-  document.getElementById('treeResult').insertAdjacentHTML('beforeend', summary);
+  
 }
 
-  roots.forEach(root => ul.appendChild(renderBranch(root)));
-  container.appendChild(ul);
-  document.getElementById('treeResult').appendChild(container);
+  
 }
 
     </div>`
