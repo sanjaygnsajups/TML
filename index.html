@@ -126,7 +126,6 @@ simulateDownline = (function(original) {
   }
 </script>
 
-$1
     <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded mb-6">
       <h2 class="text-xl font-bold mb-2 text-blue-700 dark:text-blue-300">📊 Downline Income Simulator</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -279,6 +278,66 @@ function clearManualInputs() {
   document.getElementById('level4').value = '';
   document.getElementById('level6').value = '';
   document.getElementById('manualResult').innerHTML = '';
+}
+function summarizeTreeIncome() {
+  let totalPV = 0;
+  Object.values(teamTree).forEach(m => totalPV += m.pv);
+
+  let rank = 'None';
+  let leadershipBonus = 0;
+  if (totalPV >= 9000000) { rank = '5 Star'; leadershipBonus = totalPV * 0.15; }
+  else if (totalPV >= 7500000) { rank = '4 Star'; leadershipBonus = totalPV * 0.11; }
+  else if (totalPV >= 6000000) { rank = '3 Star'; leadershipBonus = totalPV * 0.075; }
+  else if (totalPV >= 4500000) { rank = '2 Star'; leadershipBonus = totalPV * 0.045; }
+  else if (totalPV >= 3000000) { rank = '1 Star'; leadershipBonus = totalPV * 0.02; }
+
+  const summary = `
+    <div class="mt-4 p-4 rounded bg-yellow-100 dark:bg-yellow-700">
+      <strong>Total Team PV:</strong> ₹${totalPV.toLocaleString()}<br>
+      <strong>Rank Qualified:</strong> ${rank}<br>
+      <strong>Leadership Bonus:</strong> ₹${leadershipBonus.toLocaleString()}
+    </div>`;
+
+  document.getElementById('treeResult').insertAdjacentHTML('beforeend', summary);
+}
+
+function renderTreeChart() {
+  const members = Object.values(teamTree);
+  const roots = members.filter(m => !m.upline);
+  const container = document.createElement('div');
+  container.className = 'mt-6';
+
+  const ul = document.createElement('ul');
+  ul.className = 'text-sm';
+
+  function renderBranch(member) {
+    const li = document.createElement('li');
+    li.innerHTML = `👤 <strong>${member.name}</strong> (₹${member.pv.toLocaleString()})`;
+    const children = members.filter(m => m.upline === member.name);
+    if (children.length > 0) {
+      const childUl = document.createElement('ul');
+      childUl.className = 'ml-4 pl-4 border-l';
+      children.forEach(child => childUl.appendChild(renderBranch(child)));
+      li.appendChild(childUl);
+    }
+    return li;
+  }
+
+  roots.forEach(root => ul.appendChild(renderBranch(root)));
+  container.appendChild(ul);
+  document.getElementById('treeResult').appendChild(container);
+}
+
+function renderTreeResult() {
+  const result = Object.values(teamTree).map(m =>
+    `<div class="border p-2 rounded mb-2 bg-white dark:bg-gray-700">
+      👤 <strong>${m.name}</strong> | PV: ₹${m.pv.toLocaleString()} ${m.upline ? '| Upline: ' + m.upline : ''}
+    </div>`
+  ).join('');
+
+  document.getElementById('treeResult').innerHTML = `<div>${result}</div>`;
+  summarizeTreeIncome();
+  renderTreeChart();
 }
 </script>
   </div>
