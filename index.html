@@ -76,7 +76,57 @@ simulateDownline = (function(original) {
       <h1 class="text-3xl font-extrabold text-center text-primary dark:text-white animate-pulse">💼 The Modern Living</h1>
     </div>
 
-    <!-- Downline Simulator -->
+    <!-- Team Tree Builder -->
+<div class="bg-yellow-50 dark:bg-yellow-900 p-4 rounded mb-6">
+  <h2 class="text-xl font-bold mb-2 text-yellow-700 dark:text-yellow-300">🌳 Tree View Team Builder</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <label>Member Name: <input type="text" id="treeMember" class="w-full p-2 border rounded" /></label>
+    <label>Upline (Optional): <input type="text" id="treeUpline" class="w-full p-2 border rounded" /></label>
+    <label>PV Assigned: <input type="number" id="treePV" class="w-full p-2 border rounded" /></label>
+  </div>
+  <div class="mt-4 flex gap-4">
+    <button onclick="addTreeNode()" class="bg-yellow-600 text-white px-4 py-2 rounded">Add Member</button>
+    <button onclick="clearTreeBuilder()" class="bg-gray-500 text-white px-4 py-2 rounded">Clear Tree</button>
+  </div>
+  <div id="treeResult" class="mt-4 text-sm"></div>
+</div>
+
+<script>
+  let teamTree = {};
+
+  function addTreeNode() {
+    const name = document.getElementById('treeMember').value.trim();
+    const upline = document.getElementById('treeUpline').value.trim();
+    const pv = parseInt(document.getElementById('treePV').value) || 0;
+
+    if (!name) return alert("Please enter member name.");
+
+    teamTree[name] = { name, upline, pv };
+
+    renderTreeResult();
+
+    document.getElementById('treeMember').value = '';
+    document.getElementById('treeUpline').value = '';
+    document.getElementById('treePV').value = '';
+  }
+
+  function clearTreeBuilder() {
+    teamTree = {};
+    document.getElementById('treeResult').innerHTML = '';
+  }
+
+  function renderTreeResult() {
+    const result = Object.values(teamTree).map(m =>
+      `<div class="border p-2 rounded mb-2 bg-white dark:bg-gray-700">
+        👤 <strong>${m.name}</strong> | PV: ₹${m.pv.toLocaleString()} ${m.upline ? '| Upline: ' + m.upline : ''}
+      </div>`
+    ).join('');
+
+    document.getElementById('treeResult').innerHTML = `<div>${result}</div>`;
+  }
+</script>
+
+$1
     <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded mb-6">
       <h2 class="text-xl font-bold mb-2 text-blue-700 dark:text-blue-300">📊 Downline Income Simulator</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -90,8 +140,9 @@ simulateDownline = (function(original) {
         </label>
         <label>Levels Deep: <input type="number" id="depth" value="6" min="1" max="6" class="w-full p-2 border rounded" /></label>
       </div>
-      <div class="mt-4">
+      <div class="mt-4 flex gap-4">
         <button onclick="simulateDownline()" class="bg-blue-600 text-white px-4 py-2 rounded">Simulate Downline</button>
+        <button onclick="clearDownlineInputs()" class="bg-gray-500 text-white px-4 py-2 rounded">Clear</button>
       </div>
       <div id="simulationResult" class="mt-4 hidden"></div>
 <div class="flex gap-4 mt-4 hidden" id="exportButtons">
@@ -112,8 +163,9 @@ simulateDownline = (function(original) {
         <label>Team PV (Level 4): <input type="number" id="level4" class="w-full p-2 border rounded" /></label>
         <label>Team PV (Level 6): <input type="number" id="level6" class="w-full p-2 border rounded" /></label>
       </div>
-      <div class="mt-4">
+      <div class="mt-4 flex gap-4">
         <button onclick="calculateManualBonus()" class="bg-green-600 text-white px-4 py-2 rounded">Calculate Income</button>
+        <button onclick="clearManualInputs()" class="bg-gray-500 text-white px-4 py-2 rounded">Clear</button>
       </div>
       <div id="manualResult" class="mt-4"></div>
     </div>
@@ -208,6 +260,25 @@ simulateDownline = (function(original) {
       <div class="font-bold text-lg text-green-700">💰 Total Income: ₹${totalIncome.toLocaleString()}</div>
     </div>
   `;
+}
+function clearDownlineInputs() {
+  document.getElementById('referrals').value = '';
+  document.getElementById('unitsPerPerson').value = '';
+  document.getElementById('productPrice').selectedIndex = 0;
+  document.getElementById('depth').value = '';
+  document.getElementById('simulationResult').innerHTML = '';
+  document.getElementById('simulationResult').classList.add('hidden');
+  document.getElementById('exportButtons').classList.add('hidden');
+}
+
+function clearManualInputs() {
+  document.getElementById('directPV').value = '';
+  document.getElementById('level1').value = '';
+  document.getElementById('level2').value = '';
+  document.getElementById('level3').value = '';
+  document.getElementById('level4').value = '';
+  document.getElementById('level6').value = '';
+  document.getElementById('manualResult').innerHTML = '';
 }
 </script>
   </div>
