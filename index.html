@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MLM Bonus Calculator</title>
+  <title>The Modern Living Bonus Calculator</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 p-4">
   <div class="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-xl">
-    <h1 class="text-3xl font-bold mb-4 text-center text-blue-700">💼 The Modern Living </h1>
+    <h1 class="text-3xl font-bold mb-4 text-center text-blue-700">💼 The Modern Living</h1>
 
     <!-- Preset Scenarios -->
     <div class="mb-4">
@@ -49,17 +49,10 @@
         <label>3rd Gen 5-Star Count: <input type="number" id="gen3" value="0" class="w-full p-2 border rounded" /></label>
       </div>
 
-      <label>TML Yearly Profit (₹): <input type="number" id="companyProfit" value="0" class="w-full p-2 border rounded" /></label>
+      <label>5-Star Leaders in Parallel Lines: <input type="number" id="parallel5Stars" value="0" class="w-full p-2 border rounded" /></label>
+      <label>AVP Leaders in Parallel Lines: <input type="number" id="parallelAVPs" value="0" class="w-full p-2 border rounded" /></label>
 
-      <label>Elite Rank:
-        <select id="eliteRank" class="w-full p-2 border rounded">
-          <option value="0">None</option>
-          <option value="3">AVP (3%)</option>
-          <option value="5">VP (3% + 2%)</option>
-          <option value="6">SVP (3% + 2% + 1%)</option>
-          <option value="7">President (3% + 2% + 1% + 1%)</option>
-        </select>
-      </label>
+      <label>TML Yearly Profit (₹): <input type="number" id="companyProfit" value="0" class="w-full p-2 border rounded" /></label>
 
       <!-- Buttons -->
       <div class="flex gap-4 mt-4">
@@ -70,62 +63,10 @@
 
     <!-- Results -->
     <div id="result" class="mt-6 space-y-4 hidden"></div>
-
     <div id="motivate" class="text-center mt-6 text-blue-700 font-semibold text-lg hidden">💬 Grow your network. Hit your Star Rank. Multiply your income!</div>
   </div>
 
   <script>
-    function applyScenario(type) {
-      const data = {
-        beginner: {
-          directPV: 250000,
-          level1: 100000,
-          level2: 50000,
-          level3: 25000,
-          level4: 10000,
-          level6: 5000,
-          rank: "2",
-          gen1: 0,
-          gen2: 0,
-          gen3: 0,
-          companyProfit: 1000000,
-          eliteRank: "0"
-        },
-        rising: {
-          directPV: 500000,
-          level1: 300000,
-          level2: 200000,
-          level3: 150000,
-          level4: 100000,
-          level6: 75000,
-          rank: "4.5",
-          gen1: 1,
-          gen2: 0,
-          gen3: 0,
-          companyProfit: 1500000,
-          eliteRank: "3"
-        },
-        star: {
-          directPV: 750000,
-          level1: 500000,
-          level2: 400000,
-          level3: 300000,
-          level4: 200000,
-          level6: 100000,
-          rank: "15",
-          gen1: 2,
-          gen2: 1,
-          gen3: 1,
-          companyProfit: 2000000,
-          eliteRank: "7"
-        }
-      };
-      if (!data[type]) return;
-      for (let key in data[type]) {
-        document.getElementById(key).value = data[type][key];
-      }
-    }
-
     function calculateBonus() {
       const directPV = parseFloat(document.getElementById('directPV').value) || 0;
       const level1 = parseFloat(document.getElementById('level1').value) || 0;
@@ -137,15 +78,27 @@
       const gen1 = parseInt(document.getElementById('gen1').value) || 0;
       const gen2 = parseInt(document.getElementById('gen2').value) || 0;
       const gen3 = parseInt(document.getElementById('gen3').value) || 0;
+      const parallel5Stars = parseInt(document.getElementById('parallel5Stars').value) || 0;
+      const parallelAVPs = parseInt(document.getElementById('parallelAVPs').value) || 0;
       const profit = parseFloat(document.getElementById('companyProfit').value) || 0;
-      const eliteRank = parseFloat(document.getElementById('eliteRank').value) || 0;
 
       const totalPV = directPV + level1 + level2 + level3 + level4 + level6;
       const retailIncome = directPV * 0.08;
       const teamIncome = level1 * 0.04 + level2 * 0.03 + level3 * 0.03 + level4 * 0.02 + level6 * 0.02;
       const leadershipIncome = totalPV * (rankBonus / 100);
       const genIncome = totalPV * (gen1 * 0.02 + gen2 * 0.01 + gen3 * 0.005);
-      const eliteBonus = profit * (eliteRank / 100);
+
+      let eliteBonus = 0;
+      if (parallel5Stars >= 5 && parallelAVPs >= 5) {
+        eliteBonus = profit * 0.07;
+      } else if (parallel5Stars >= 5) {
+        eliteBonus = profit * 0.06;
+      } else if (parallel5Stars >= 4) {
+        eliteBonus = profit * 0.05;
+      } else if (parallel5Stars >= 3) {
+        eliteBonus = profit * 0.03;
+      }
+
       const total = retailIncome + teamIncome + leadershipIncome + genIncome + eliteBonus;
 
       document.getElementById('result').innerHTML = `
