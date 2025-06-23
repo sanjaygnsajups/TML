@@ -91,10 +91,9 @@ function shareResult() {
         <label>Team PV (Level 6): <input type="number" id="level6" class="w-full p-2 border rounded" oninput="calculateManualBonus()" /></label>
       </div>
       <div class="mt-4 flex gap-4">
-        <button onclick="calculateManualBonus()" class="bg-green-600 text-white px-4 py-2 rounded">Calculate Income</button>
         <button onclick="clearManualInputs()" class="bg-gray-500 text-white px-4 py-2 rounded">Clear</button>
       </div>
-      <div id="manualResult" class="mt-4"></div>
+      <div id="manualResult" class="mt-4 transition-all duration-300 ease-in-out"></div>
     </div>
 
     
@@ -152,6 +151,11 @@ function shareResult() {
   }
 
   const totalIncome = retailIncome + teamIncome + leadershipBonus + gen1 + gen2 + gen3 + eliteBonus;
+
+  // Animate result update
+  const resultBox = document.getElementById('manualResult');
+  resultBox.classList.add('animate-pulse');
+  setTimeout(() => resultBox.classList.remove('animate-pulse'), 300);
 
   document.getElementById('manualResult').innerHTML = `
     <div class="space-y-2 text-sm">
