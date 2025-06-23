@@ -25,8 +25,9 @@
     <h1 class="text-3xl font-bold mb-6 text-center text-green-700">🌟 TML Bonus Visual Tool</h1>
 
     <div class="mb-4 text-center">
-      <button onclick="addBlock()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">➕ Add Member Block</button>
-      <p class="text-sm text-gray-500">Add team members with product values and levels</p>
+      <button onclick="addBlock(true)" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">➕ Add You (Level 0)</button>
+      <button onclick="addBlock(false)" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded ml-2">➕ Add Member Block</button>
+      <p class="text-sm text-gray-500">Add yourself and team members with product values and levels</p>
     </div>
 
     <div id="tree" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8"></div>
@@ -88,101 +89,20 @@
     const tree = document.getElementById('tree');
     let blockCount = 0;
 
-    function addBlock() {
+    function addBlock(isSelf = false) {
       const div = document.createElement('div');
       div.className = 'block';
       div.innerHTML = `
-        <input placeholder="Name" class="w-full p-1 mb-1 border rounded" />
+        <input placeholder="${isSelf ? 'You (Self)' : 'Name'}" class="w-full p-1 mb-1 border rounded" ${isSelf ? 'readonly' : ''} />
         <select class="productValue w-full p-1 border rounded">
           <option value="250000">TT (₹2.5L)</option>
           <option value="300000">UTS (₹3L)</option>
         </select>
         <select class="level w-full p-1 mt-1 border rounded">
-          <option value="1">Level 1</option>
-          <option value="2">Level 2</option>
-          <option value="3">Level 3</option>
-          <option value="4">Level 4</option>
-          <option value="5">Level 5</option>
-          <option value="6">Level 6</option>
+          ${isSelf ? '<option value="0">Level 0 (You)</option>' : '<option value="1">Level 1</option><option value="2">Level 2</option><option value="3">Level 3</option><option value="4">Level 4</option><option value="5">Level 5</option><option value="6">Level 6</option>'}
         </select>`;
       tree.appendChild(div);
       blockCount++;
-    }
-
-    function calculateBonuses() {
-      if (blockCount === 0) {
-        alert("Please add at least one member block before calculating.");
-        return;
-      }
-
-      let levelTotals = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0};
-      let totalUnits = 0;
-
-      document.querySelectorAll('.block').forEach(block => {
-        const value = parseInt(block.querySelector('.productValue').value);
-        const level = parseInt(block.querySelector('.level').value);
-        levelTotals[level] += value;
-        totalUnits++;
-      });
-
-      const directPV = parseFloat(document.getElementById('directPV').value) || 0;
-      const profit = parseFloat(document.getElementById('companyProfit').value) || 0;
-      const gen1 = parseInt(document.getElementById('gen1').value) || 0;
-      const gen2 = parseInt(document.getElementById('gen2').value) || 0;
-      const gen3 = parseInt(document.getElementById('gen3').value) || 0;
-      const eliteRank = parseFloat(document.getElementById('eliteRank').value) || 0;
-
-      const retail = directPV * 0.08;
-      const team = levelTotals[1]*0.04 + levelTotals[2]*0.03 + levelTotals[3]*0.03 + levelTotals[4]*0.02 + levelTotals[6]*0.02;
-      const totalPV = Object.values(levelTotals).reduce((a, b) => a + b, 0) + directPV;
-
-      let rank = 'None';
-      let percent = 0;
-      if (totalPV >= 9000000) { rank = '5-Star'; percent = 15; }
-      else if (totalPV >= 7500000) { rank = '4-Star'; percent = 11; }
-      else if (totalPV >= 6000000) { rank = '3-Star'; percent = 7.5; }
-      else if (totalPV >= 4500000) { rank = '2-Star'; percent = 4.5; }
-      else if (totalPV >= 3000000) { rank = '1-Star'; percent = 2; }
-      const leadership = totalPV * (percent / 100);
-
-      const generation = totalPV * (gen1*0.02 + gen2*0.01 + gen3*0.005);
-      const elite = profit * (eliteRank / 100);
-      const totalBonus = retail + team + leadership + generation + elite;
-
-      document.getElementById('totalPV').textContent = totalPV.toLocaleString();
-      document.getElementById('totalUnits').textContent = totalUnits;
-      document.getElementById('retail').textContent = retail.toFixed(2);
-      document.getElementById('team').textContent = team.toFixed(2);
-      document.getElementById('rankLabel').textContent = rank;
-      document.getElementById('leadership').textContent = leadership.toFixed(2);
-      document.getElementById('generation').textContent = generation.toFixed(2);
-      document.getElementById('elite').textContent = elite.toFixed(2);
-      document.getElementById('totalBonus').textContent = totalBonus.toFixed(2);
-
-      document.getElementById('results').classList.remove('hidden');
-    }
-
-    function clearAll() {
-      document.getElementById('tree').innerHTML = '';
-      document.getElementById('results').classList.add('hidden');
-      document.getElementById('results').querySelectorAll('span').forEach(span => span.textContent = '0');
-      document.querySelectorAll('input').forEach(input => input.value = '');
-      blockCount = 0;
-    }
-
-    function exportToExcel() {
-      const rows = [['Label', 'Value']];
-      document.querySelectorAll('#results span').forEach(span => {
-        rows.push([span.id, span.textContent]);
-      });
-      let csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "tml_bonus_summary.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
     }
   </script>
 </body>
