@@ -6,63 +6,7 @@
   <title>The Modern Living Bonus Calculator</title>
   <link rel="icon" href="https://via.placeholder.com/32" />
   <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            primary: '#0f172a',
-            secondary: '#2563eb',
-            accent: '#22c55e'
-          }
-        }
-      }
-    }
-  </script>
-<script>
-function downloadExcel() {
-  let table = document.querySelector('#simulationResult table');
-  let rows = Array.from(table.querySelectorAll('tr')).map(row =>
-    Array.from(row.querySelectorAll('td, th')).map(cell => cell.innerText)
-  );
-  let csvContent = 'data:text/csv;charset=utf-8,' + rows.map(e => e.join(",")).join("
-");
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", "mlm_income_report.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-
-function downloadPDF() {
-  const element = document.getElementById('simulationResult');
-  const opt = {
-    margin:       0.5,
-    filename:     'mlm_income_report.pdf',
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2 },
-    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-  };
-  html2pdf().from(element).set(opt).save();
-}
-
-function shareResult() {
-  const text = 'Check out my MLM income projection using The Modern Living Calculator!';
-  const url = window.location.href;
-  if (navigator.share) {
-    navigator.share({ title: 'MLM Calculator', text, url });
-  } else {
-    alert('Share this link: ' + url);
-  }
-}
-
-
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 p-4 dark:bg-gray-900 dark:text-gray-200">
   <div class="max-w-4xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl">
@@ -71,12 +15,6 @@ function shareResult() {
       <h1 class="text-3xl font-extrabold text-center text-primary dark:text-white animate-pulse">💼 The Modern Living</h1>
     </div>
 
-    
-
-    
-    </div>
-
-    <!-- Manual Calculator -->
     <div class="bg-green-50 dark:bg-green-900 p-4 rounded mb-6">
       <h2 class="text-xl font-bold mb-2 text-green-700 dark:text-green-300">🧮 Manual Bonus Calculator</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -95,9 +33,10 @@ function shareResult() {
       </div>
       <div id="manualResult" class="mt-4 transition-all duration-300 ease-in-out"></div>
     </div>
+  </div>
 
-    
-    function calculateManualBonus() {
+<script>
+function calculateManualBonus() {
   const directPV = parseInt(document.getElementById('directPV').value) || 0;
   const level1 = parseInt(document.getElementById('level1').value) || 0;
   const level2 = parseInt(document.getElementById('level2').value) || 0;
@@ -117,7 +56,6 @@ function shareResult() {
   else if (totalPV >= 4500000) { rank = '2 Star'; leadershipBonus = totalPV * 0.045; }
   else if (totalPV >= 3000000) { rank = '1 Star'; leadershipBonus = totalPV * 0.02; }
 
-  // Generation Income (for 5-star only)
   let gen1 = 0, gen2 = 0, gen3 = 0;
   if (rank === '5 Star') {
     gen1 = totalPV * 0.02;
@@ -125,12 +63,11 @@ function shareResult() {
     gen3 = totalPV * 0.005;
   }
 
-  // Elite Bonus (from TML yearly profit - fixed value for example)
   const yearlyProfit = parseInt(document.getElementById('yearlyProfit').value) || 1000000;
-  let eliteTitle = '';
-  let eliteBonus = 0;
   const num5Star = parseInt(document.getElementById('num5Star').value) || 0;
   const numAVP = parseInt(document.getElementById('numAVP').value) || 0;
+  let eliteTitle = '';
+  let eliteBonus = 0;
 
   if (num5Star >= 3) {
     eliteTitle = 'AVP';
@@ -148,33 +85,21 @@ function shareResult() {
       eliteBonus += yearlyProfit * 0.01;
     }
   }
-  }
 
   const totalIncome = retailIncome + teamIncome + leadershipBonus + gen1 + gen2 + gen3 + eliteBonus;
 
-  // Animate result update
   const resultBox = document.getElementById('manualResult');
   resultBox.classList.add('animate-pulse');
   setTimeout(() => resultBox.classList.remove('animate-pulse'), 300);
 
-  document.getElementById('manualResult').innerHTML = `
+  resultBox.innerHTML = `
     <div class="space-y-2 text-sm">
-  <div>🛒 Retail Income: ₹${retailIncome.toLocaleString()}</div>
-  <div>👥 Team Income: ₹${teamIncome.toLocaleString()}</div>
-  <div>🏆 Leadership Bonus (${rank}): ₹${leadershipBonus.toLocaleString()}</div>
-  <div>🌿 Generation Income: ₹${(gen1 + gen2 + gen3).toLocaleString()}</div>
-  <div>🎖️ Elite Bonus (${eliteTitle || 'N/A'}): ₹${eliteBonus.toLocaleString()}</div>
-  <div class="font-bold text-lg text-green-700">💰 Total Income: ₹${totalIncome.toLocaleString()}</div>
-  <div class="mt-4 space-x-2">
-    <button onclick="downloadExcel()" class="bg-green-600 text-white px-4 py-2 rounded">📥 Export to Excel</button>
-    <button onclick="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded">📄 Export to PDF</button>
-    <button onclick="shareResult()" class="bg-blue-700 text-white px-4 py-2 rounded">🔗 Share</button>
-  </div>
-</div>
+      <div>🛒 Retail Income: ₹${retailIncome.toLocaleString()}</div>
       <div>👥 Team Income: ₹${teamIncome.toLocaleString()}</div>
       <div>🏆 Leadership Bonus (${rank}): ₹${leadershipBonus.toLocaleString()}</div>
+      <div>🌿 Generation Income: ₹${(gen1 + gen2 + gen3).toLocaleString()}</div>
+      <div>🎖️ Elite Bonus (${eliteTitle || 'N/A'}): ₹${eliteBonus.toLocaleString()}</div>
       <div class="font-bold text-lg text-green-700">💰 Total Income: ₹${totalIncome.toLocaleString()}</div>
-
       <div class="mt-4 space-x-2">
         <button onclick="downloadExcel()" class="bg-green-600 text-white px-4 py-2 rounded">📥 Export to Excel</button>
         <button onclick="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded">📄 Export to PDF</button>
@@ -182,16 +107,6 @@ function shareResult() {
       </div>
     </div>
   `;
-}
-}
-function clearDownlineInputs() {
-  document.getElementById('referrals').value = '';
-  document.getElementById('unitsPerPerson').value = '';
-  document.getElementById('productPrice').selectedIndex = 0;
-  document.getElementById('depth').value = '';
-  document.getElementById('simulationResult').innerHTML = '';
-  document.getElementById('simulationResult').classList.add('hidden');
-  document.getElementById('exportButtons').classList.add('hidden');
 }
 
 function clearManualInputs() {
@@ -201,22 +116,43 @@ function clearManualInputs() {
   document.getElementById('level3').value = '';
   document.getElementById('level4').value = '';
   document.getElementById('level6').value = '';
+  document.getElementById('num5Star').value = '';
+  document.getElementById('numAVP').value = '';
+  document.getElementById('yearlyProfit').value = '';
   document.getElementById('manualResult').innerHTML = '';
 }
-  
+
+function downloadExcel() {
+  const content = document.getElementById('manualResult').innerText;
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'mlm_income_report.csv';
+  link.click();
 }
 
-  
+function downloadPDF() {
+  const element = document.getElementById('manualResult');
+  const opt = {
+    margin:       0.5,
+    filename:     'mlm_income_report.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+  };
+  html2pdf().from(element).set(opt).save();
 }
 
-    </div>`
-  ).join('');
-
-  document.getElementById('treeResult').innerHTML = `<div>${result}</div>`;
-  summarizeTreeIncome();
-  renderTreeChart();
+function shareResult() {
+  const text = 'Check out my MLM income projection using The Modern Living Calculator!';
+  const url = window.location.href;
+  if (navigator.share) {
+    navigator.share({ title: 'MLM Calculator', text, url });
+  } else {
+    alert('Share this link: ' + url);
+  }
 }
 </script>
-  </div>
+
 </body>
 </html>
