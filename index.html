@@ -60,12 +60,7 @@ function shareResult() {
   }
 }
 
-simulateDownline = (function(original) {
-  return function(...args) {
-    original(...args);
-    document.getElementById('exportButtons').classList.remove('hidden');
-  }
-})(simulateDownline);
+
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
@@ -76,75 +71,10 @@ simulateDownline = (function(original) {
       <h1 class="text-3xl font-extrabold text-center text-primary dark:text-white animate-pulse">💼 The Modern Living</h1>
     </div>
 
-    <!-- Team Tree Builder -->
-<div class="bg-yellow-50 dark:bg-yellow-900 p-4 rounded mb-6">
-  <h2 class="text-xl font-bold mb-2 text-yellow-700 dark:text-yellow-300">🌳 Tree View Team Builder</h2>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <label>Member Name: <input type="text" id="treeMember" class="w-full p-2 border rounded" /></label>
-    <label>Upline (Optional): <input type="text" id="treeUpline" class="w-full p-2 border rounded" /></label>
-    <label>PV Assigned: <input type="number" id="treePV" class="w-full p-2 border rounded" /></label>
-  </div>
-  <div class="mt-4 flex gap-4">
-    <button onclick="addTreeNode()" class="bg-yellow-600 text-white px-4 py-2 rounded">Add Member</button>
-    <button onclick="clearTreeBuilder()" class="bg-gray-500 text-white px-4 py-2 rounded">Clear Tree</button>
-  </div>
-  <div id="treeResult" class="mt-4 text-sm"></div>
-</div>
-
-<script>
-  let teamTree = {};
-
-  function addTreeNode() {
-    const name = document.getElementById('treeMember').value.trim();
-    const upline = document.getElementById('treeUpline').value.trim();
-    const pv = parseInt(document.getElementById('treePV').value) || 0;
-
-    if (!name) return alert("Please enter member name.");
-
-    teamTree[name] = { name, upline, pv };
-
-    renderTreeResult();
-
-    document.getElementById('treeMember').value = '';
-    document.getElementById('treeUpline').value = '';
-    document.getElementById('treePV').value = '';
-  }
-
-  function clearTreeBuilder() {
-    teamTree = {};
-    document.getElementById('treeResult').innerHTML = '';
-  }
-
-  function renderTreeResult() {
-    const result = Object.values(teamTree).map(m =>
-      `<div class="border p-2 rounded mb-2 bg-white dark:bg-gray-700">
-        👤 <strong>${m.name}</strong> | PV: ₹${m.pv.toLocaleString()} ${m.upline ? '| Upline: ' + m.upline : ''}
-      </div>`
-    ).join('');
-
-    document.getElementById('treeResult').innerHTML = `<div>${result}</div>`;
-  }
-</script>
+    
 
     <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded mb-6">
-      <h2 class="text-xl font-bold mb-2 text-blue-700 dark:text-blue-300">📊 Downline Income Simulator</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <label>Referrals Per Person: <input type="number" id="referrals" value="3" class="w-full p-2 border rounded" /></label>
-        <label>Units Per Person: <input type="number" id="unitsPerPerson" value="1" class="w-full p-2 border rounded" /></label>
-        <label>Product Price (₹):
-          <select id="productPrice" class="w-full p-2 border rounded">
-            <option value="250000">Hydroace TT (₹2,50,000)</option>
-            <option value="300000">Hydroace UTS (₹3,00,000)</option>
-          </select>
-        </label>
-        <label>Levels Deep: <input type="number" id="depth" value="6" min="1" max="6" class="w-full p-2 border rounded" /></label>
-      </div>
-      <div class="mt-4 flex gap-4">
-        <button onclick="simulateDownline()" class="bg-blue-600 text-white px-4 py-2 rounded">Simulate Downline</button>
-        <button onclick="clearDownlineInputs()" class="bg-gray-500 text-white px-4 py-2 rounded">Clear</button>
-      </div>
-      <div id="simulationResult" class="mt-4 hidden"></div>
-<div class="flex gap-4 mt-4 hidden" id="exportButtons">
+      
   <button onclick="downloadExcel()" class="bg-green-600 text-white px-4 py-2 rounded">📥 Export to Excel</button>
   <button onclick="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded">📄 Export to PDF</button>
   <button onclick="shareResult()" class="bg-blue-700 text-white px-4 py-2 rounded">🔗 Share</button>
@@ -169,66 +99,7 @@ simulateDownline = (function(original) {
       <div id="manualResult" class="mt-4"></div>
     </div>
 
-    <script>
-      function simulateDownline() {
-        const referrals = parseInt(document.getElementById('referrals').value) || 0;
-        const units = parseInt(document.getElementById('unitsPerPerson').value) || 0;
-        const price = parseInt(document.getElementById('productPrice').value) || 0;
-        const depth = parseInt(document.getElementById('depth').value) || 0;
-
-        const levels = [];
-        let members = 1;
-
-        for (let i = 1; i <= depth; i++) {
-          members = Math.pow(referrals, i);
-          const pv = members * units * price;
-          let bonusPercent = 0;
-          if (i === 1) bonusPercent = 0.04;
-          else if (i === 2) bonusPercent = 0.03;
-          else if (i === 3) bonusPercent = 0.03;
-          else if (i === 4) bonusPercent = 0.02;
-          else if (i === 6) bonusPercent = 0.02;
-          const income = pv * bonusPercent;
-          levels.push({ level: i, members, pv, bonusPercent, income });
-        }
-
-        const totalPV = levels.reduce((sum, l) => sum + l.pv, 0);
-        let rank = 'None';
-        if (totalPV >= 9000000) rank = '5 Star';
-        else if (totalPV >= 7500000) rank = '4 Star';
-        else if (totalPV >= 6000000) rank = '3 Star';
-        else if (totalPV >= 4500000) rank = '2 Star';
-        else if (totalPV >= 3000000) rank = '1 Star';
-
-        document.getElementById('simulationResult').innerHTML = `
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm text-left border">
-              <thead class="bg-blue-100 dark:bg-blue-800">
-                <tr>
-                  <th class="p-2">Level</th>
-                  <th class="p-2">Members</th>
-                  <th class="p-2">PV</th>
-                  <th class="p-2">Bonus %</th>
-                  <th class="p-2">Team Income (₹)</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${levels.map(l => `
-                  <tr class="border-t">
-                    <td class="p-2">${l.level}</td>
-                    <td class="p-2">${l.members}</td>
-                    <td class="p-2">${l.pv.toLocaleString()}</td>
-                    <td class="p-2">${(l.bonusPercent * 100).toFixed(1)}%</td>
-                    <td class="p-2">₹${l.income.toLocaleString()}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-          
-        `;
-        document.getElementById('simulationResult').classList.remove('hidden');
-      }
+    
     function calculateManualBonus() {
   const directPV = parseInt(document.getElementById('directPV').value) || 0;
   const level1 = parseInt(document.getElementById('level1').value) || 0;
@@ -279,18 +150,6 @@ function clearManualInputs() {
   document.getElementById('level6').value = '';
   document.getElementById('manualResult').innerHTML = '';
 }
-function summarizeTreeIncome() {
-  let totalPV = 0;
-  Object.values(teamTree).forEach(m => totalPV += m.pv);
-
-  let rank = 'None';
-  let leadershipBonus = 0;
-  if (totalPV >= 9000000) { rank = '5 Star'; leadershipBonus = totalPV * 0.15; }
-  else if (totalPV >= 7500000) { rank = '4 Star'; leadershipBonus = totalPV * 0.11; }
-  else if (totalPV >= 6000000) { rank = '3 Star'; leadershipBonus = totalPV * 0.075; }
-  else if (totalPV >= 4500000) { rank = '2 Star'; leadershipBonus = totalPV * 0.045; }
-  else if (totalPV >= 3000000) { rank = '1 Star'; leadershipBonus = totalPV * 0.02; }
-
   const summary = `
     <div class="mt-4 p-4 rounded bg-yellow-100 dark:bg-yellow-700">
       <strong>Total Team PV:</strong> ₹${totalPV.toLocaleString()}<br>
@@ -301,37 +160,11 @@ function summarizeTreeIncome() {
   document.getElementById('treeResult').insertAdjacentHTML('beforeend', summary);
 }
 
-function renderTreeChart() {
-  const members = Object.values(teamTree);
-  const roots = members.filter(m => !m.upline);
-  const container = document.createElement('div');
-  container.className = 'mt-6';
-
-  const ul = document.createElement('ul');
-  ul.className = 'text-sm';
-
-  function renderBranch(member) {
-    const li = document.createElement('li');
-    li.innerHTML = `👤 <strong>${member.name}</strong> (₹${member.pv.toLocaleString()})`;
-    const children = members.filter(m => m.upline === member.name);
-    if (children.length > 0) {
-      const childUl = document.createElement('ul');
-      childUl.className = 'ml-4 pl-4 border-l';
-      children.forEach(child => childUl.appendChild(renderBranch(child)));
-      li.appendChild(childUl);
-    }
-    return li;
-  }
-
   roots.forEach(root => ul.appendChild(renderBranch(root)));
   container.appendChild(ul);
   document.getElementById('treeResult').appendChild(container);
 }
 
-function renderTreeResult() {
-  const result = Object.values(teamTree).map(m =>
-    `<div class="border p-2 rounded mb-2 bg-white dark:bg-gray-700">
-      👤 <strong>${m.name}</strong> | PV: ₹${m.pv.toLocaleString()} ${m.upline ? '| Upline: ' + m.upline : ''}
     </div>`
   ).join('');
 
