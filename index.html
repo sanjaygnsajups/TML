@@ -96,87 +96,55 @@
   </div>
 
   <script>
-    const tree = document.getElementById('tree');
-    let blockCount = 0;
-
-    function addBlock(isSelf = false) {
-      const div = document.createElement('div');
-      div.className = 'block';
-      div.innerHTML = `
-        <input placeholder="${isSelf ? document.getElementById('yourName').value || 'You (Self)' : 'Name'}" class="w-full p-1 mb-1 border rounded" ${isSelf ? 'readonly' : ''} />
-        <select class="productValue w-full p-1 border rounded">
-          <option value="250000">TT (₹2.5L)</option>
-          <option value="300000">UTS (₹3L)</option>
-        </select>
-        <select class="level w-full p-1 mt-1 border rounded">
-          ${isSelf ? '<option value="0">Level 0 (You)</option>' : '<option value="1">Level 1</option><option value="2">Level 2</option><option value="3">Level 3</option><option value="4">Level 4</option><option value="5">Level 5</option><option value="6">Level 6</option>'}
-        </select>
-        <div class="remove-btn" onclick="this.parentElement.remove()">Remove</div>
-      `;
-      tree.appendChild(div);
-      blockCount++;
-    }
-
     function calculateBonuses() {
       const directPV = parseFloat(document.getElementById('directPV').value) || 0;
       const blocks = document.querySelectorAll('#tree .block');
-      let levelPVs = [0, 0, 0, 0, 0, 0, 0];
-      let totalUnits = 0;
+      let teamPV = 0;
+      let units = 0;
 
       blocks.forEach(block => {
-        const level = parseInt(block.querySelector('.level').value);
-        const pv = parseFloat(block.querySelector('.productValue').value);
-        if (!isNaN(level) && !isNaN(pv)) {
-          levelPVs[level] += pv;
-          totalUnits++;
+        const pv = parseFloat(block.dataset.pv) || 0;
+        if (!block.classList.contains('self-block')) {
+          teamPV += pv;
         }
+        units += pv >= 300000 ? 1 : 0;
       });
 
-      const totalPV = directPV + levelPVs.slice(1).reduce((a, b) => a + b, 0);
-      const retailIncome = directPV * 0.08;
-      const teamIncome = levelPVs[1] * 0.04 + levelPVs[2] * 0.03 + levelPVs[3] * 0.03 + levelPVs[4] * 0.02 + levelPVs[6] * 0.02;
-
-      // Determine leadership rank based on PV
+      const totalPV = directPV + teamPV;
       let rank = 'None';
       let rankPercent = 0;
-      if (totalPV >= 9000000) { rank = '5 Star (15%)'; rankPercent = 15; }
-      else if (totalPV >= 7500000) { rank = '4 Star (11%)'; rankPercent = 11; }
-      else if (totalPV >= 6000000) { rank = '3 Star (7.5%)'; rankPercent = 7.5; }
-      else if (totalPV >= 4500000) { rank = '2 Star (4.5%)'; rankPercent = 4.5; }
-      else if (totalPV >= 3000000) { rank = '1 Star (2%)'; rankPercent = 2; }
 
-      const leadershipIncome = totalPV * (rankPercent / 100);
-      const genIncome = totalPV * (parseInt(document.getElementById('gen1').value || 0) * 0.02 + parseInt(document.getElementById('gen2').value || 0) * 0.01 + parseInt(document.getElementById('gen3').value || 0) * 0.005);
-      const elitePercent = parseFloat(document.getElementById('eliteRank').value) || 0;
-      const eliteBonus = (parseFloat(document.getElementById('companyProfit').value) || 0) * (elitePercent / 100);
-      const totalBonus = retailIncome + teamIncome + leadershipIncome + genIncome + eliteBonus;
+      if (totalPV >= 9000000) { rank = '5 Star'; rankPercent = 15; }
+      else if (totalPV >= 7500000) { rank = '4 Star'; rankPercent = 11; }
+      else if (totalPV >= 6000000) { rank = '3 Star'; rankPercent = 7.5; }
+      else if (totalPV >= 4500000) { rank = '2 Star'; rankPercent = 4.5; }
+      else if (totalPV >= 3000000) { rank = '1 Star'; rankPercent = 2; }
+
+      const retailIncome = directPV * 0.08;
+      const teamIncome = teamPV * 0.04;
+      const leadershipBonus = totalPV * (rankPercent / 100);
+
+      const gen1 = parseInt(document.getElementById('gen1').value) || 0;
+      const gen2 = parseInt(document.getElementById('gen2').value) || 0;
+      const gen3 = parseInt(document.getElementById('gen3').value) || 0;
+      const genIncome = totalPV * (gen1 * 0.02 + gen2 * 0.01 + gen3 * 0.005);
+
+      const profit = parseFloat(document.getElementById('companyProfit').value) || 0;
+      const eliteVal = parseFloat(document.getElementById('eliteRank').value) || 0;
+      const eliteBonus = profit * (eliteVal / 100);
+
+      const totalBonus = retailIncome + teamIncome + leadershipBonus + genIncome + eliteBonus;
 
       document.getElementById('totalPV').innerText = totalPV.toFixed(2);
-      document.getElementById('totalUnits').innerText = totalUnits;
+      document.getElementById('totalUnits').innerText = units;
       document.getElementById('retail').innerText = retailIncome.toFixed(2);
       document.getElementById('team').innerText = teamIncome.toFixed(2);
       document.getElementById('rankLabel').innerText = rank;
-      document.getElementById('leadership').innerText = leadershipIncome.toFixed(2);
+      document.getElementById('leadership').innerText = leadershipBonus.toFixed(2);
       document.getElementById('generation').innerText = genIncome.toFixed(2);
       document.getElementById('elite').innerText = eliteBonus.toFixed(2);
       document.getElementById('totalBonus').innerText = totalBonus.toFixed(2);
       document.getElementById('results').classList.remove('hidden');
-    }
-
-    function clearAll() {
-      document.getElementById('yourName').value = '';
-      document.getElementById('directPV').value = '';
-      document.getElementById('companyProfit').value = '';
-      document.getElementById('gen1').value = '';
-      document.getElementById('gen2').value = '';
-      document.getElementById('gen3').value = '';
-      document.getElementById('eliteRank').value = '';
-      document.getElementById('results').classList.add('hidden');
-      document.getElementById('tree').innerHTML = '';
-    }
-
-    function exportToExcel() {
-      alert('Export to Excel functionality will be added in a future version.');
     }
   </script>
 </body>
