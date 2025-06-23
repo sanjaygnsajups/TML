@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MLM Visual Bonus Tool</title>
+  <title>TML Bonus Visual Tool</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .block {
       min-width: 120px;
       padding: 10px;
-      background-color: #fef9c3;
-      border: 2px solid #facc15;
+      background-color: #bbf7d0;
+      border: 2px solid #38bdf8;
       border-radius: 10px;
       text-align: center;
       transition: transform 0.3s ease;
@@ -18,24 +18,18 @@
     .block:hover {
       transform: scale(1.05);
     }
-    .line {
-      height: 20px;
-      width: 2px;
-      background: #60a5fa;
-      margin: auto;
-    }
   </style>
 </head>
-<body class="bg-gradient-to-r from-yellow-100 to-blue-100 text-gray-800 p-4">
+<body class="bg-gradient-to-r from-green-100 to-blue-100 text-gray-800 p-4">
   <div class="max-w-6xl mx-auto bg-white p-6 rounded-2xl shadow-xl">
-    <h1 class="text-3xl font-bold mb-6 text-center text-yellow-600">🌟 MLM Bonus Visual Tool</h1>
+    <h1 class="text-3xl font-bold mb-6 text-center text-green-700">🌟 TML Bonus Visual Tool</h1>
 
     <div class="mb-4 text-center">
-      <button onclick="addBlock()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded">➕ Add Member Block</button>
-      <p class="text-sm text-gray-500">Assign members under each other with product values</p>
+      <button onclick="addBlock()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">➕ Add Member Block</button>
+      <p class="text-sm text-gray-500">Add team members with product values and levels</p>
     </div>
 
-    <div id="tree" class="flex flex-wrap justify-center gap-6 mb-8"></div>
+    <div id="tree" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8"></div>
 
     <div class="grid grid-cols-1 gap-4 mb-4">
       <label>Direct Sales PV:
@@ -70,9 +64,9 @@
     </div>
 
     <div class="text-center mb-4 flex gap-4 justify-center flex-wrap">
-      <button onclick="calculateBonuses()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded">🎯 Calculate Bonus</button>
+      <button onclick="calculateBonuses()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded">🎯 Calculate Bonus</button>
       <button onclick="clearAll()" class="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded">❌ Clear</button>
-      <button onclick="exportToExcel()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded">📥 Export to Excel</button>
+      <button onclick="exportToExcel()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded">📥 Export to Excel</button>
       <button onclick="window.print()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded">🖨️ Print / PDF</button>
     </div>
 
@@ -98,7 +92,7 @@
       const div = document.createElement('div');
       div.className = 'block';
       div.innerHTML = `
-        <label class="block text-sm">👤 Member ${blockCount + 1}</label>
+        <input placeholder="Name" class="w-full p-1 mb-1 border rounded" />
         <select class="productValue w-full p-1 border rounded">
           <option value="250000">TT (₹2.5L)</option>
           <option value="300000">UTS (₹3L)</option>
@@ -185,7 +179,7 @@
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "mlm_bonus_summary.csv");
+      link.setAttribute("download", "tml_bonus_summary.csv");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
