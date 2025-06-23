@@ -10,33 +10,25 @@
   <div class="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-xl">
     <h1 class="text-2xl font-bold mb-4 text-center">MLM Bonus Calculator</h1>
     
-    <!-- INPUT FORM -->
     <form id="bonusForm" class="grid grid-cols-1 gap-4">
-      <!-- User Type -->
-      <label>
-        ID Type:
+      <label>ID Type:
         <select id="idType" class="w-full border p-2 rounded">
           <option value="distributor">Distributor</option>
           <option value="customer">Customer</option>
         </select>
       </label>
 
-      <!-- Product Sold -->
-      <label>
-        Product Sold:
+      <label>Product Sold:
         <select id="productType" class="w-full border p-2 rounded">
           <option value="250000">Hydroace TT (₹2,50,000)</option>
           <option value="300000">Hydroace UTS (₹3,00,000)</option>
         </select>
       </label>
 
-      <!-- Number of Products Sold -->
-      <label>
-        Number of Direct Sales:
+      <label>Number of Direct Sales:
         <input type="number" id="directSales" value="0" min="0" class="w-full border p-2 rounded" />
       </label>
 
-      <!-- Team Sales PV -->
       <div class="grid grid-cols-2 gap-4">
         <label>Level 1 Sales PV: <input type="number" id="level1" value="0" class="w-full border p-2 rounded" /></label>
         <label>Level 2 Sales PV: <input type="number" id="level2" value="0" class="w-full border p-2 rounded" /></label>
@@ -45,9 +37,7 @@
         <label>Level 6 Sales PV: <input type="number" id="level6" value="0" class="w-full border p-2 rounded" /></label>
       </div>
 
-      <!-- Rank -->
-      <label>
-        Your Rank:
+      <label>Your Rank:
         <select id="rank" class="w-full border p-2 rounded">
           <option value="0">None</option>
           <option value="2">1 Star (2%)</option>
@@ -58,7 +48,6 @@
         </select>
       </label>
 
-      <!-- Generation Income -->
       <div class="grid grid-cols-3 gap-4">
         <label>1st Gen 5-Star Count: <input type="number" id="gen1" value="0" class="w-full border p-2 rounded" /></label>
         <label>2nd Gen 5-Star Count: <input type="number" id="gen2" value="0" class="w-full border p-2 rounded" /></label>
@@ -68,7 +57,6 @@
       <button type="button" onclick="calculateBonus()" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Calculate</button>
     </form>
 
-    <!-- OUTPUT -->
     <div id="result" class="mt-6 p-4 bg-green-100 rounded hidden"></div>
   </div>
 
