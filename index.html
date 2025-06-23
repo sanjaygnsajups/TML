@@ -5,7 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Modern Living Bonus Calculator</title>
   <link rel="icon" href="https://via.placeholder.com/32" />
-  <script src="https://cdn.tailwindcss.com">function downloadExcel() {
+  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0f172a',
+            secondary: '#2563eb',
+            accent: '#22c55e'
+          }
+        }
+      }
+    }
+  </script>
+<script>
+function downloadExcel() {
   let table = document.querySelector('#simulationResult table');
   let rows = Array.from(table.querySelectorAll('tr')).map(row =>
     Array.from(row.querySelectorAll('td, th')).map(cell => cell.innerText)
@@ -51,20 +68,6 @@ simulateDownline = (function(original) {
 })(simulateDownline);
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            primary: '#0f172a',
-            secondary: '#2563eb',
-            accent: '#22c55e'
-          }
-        }
-      }
-    }
-  </script>
 </head>
 <body class="bg-gray-100 text-gray-800 p-4 dark:bg-gray-900 dark:text-gray-200">
   <div class="max-w-4xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl">
@@ -157,7 +160,7 @@ simulateDownline = (function(original) {
               </tbody>
             </table>
           </div>
-          <div class="mt-4 text-lg font-bold text-green-700">📌 Total PV: ₹${totalPV.toLocaleString()} — You qualify as <span class="underline">${rank}</span></div>
+          
         `;
         document.getElementById('simulationResult').classList.remove('hidden');
       }
