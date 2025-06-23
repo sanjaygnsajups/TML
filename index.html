@@ -9,30 +9,67 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 p-4 dark:bg-gray-900 dark:text-gray-200">
-  <div class="max-w-4xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl">
-    <div class="flex flex-col items-center mb-4">
+  <div class="max-w-5xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl">
+    <div class="flex flex-col items-center mb-6">
       <img src="https://via.placeholder.com/100x100?text=Logo" alt="Logo" class="mb-2 rounded-full shadow-md">
-      <h1 class="text-3xl font-extrabold text-center text-primary dark:text-white animate-pulse">💼 The Modern Living</h1>
+      <h1 class="text-3xl font-extrabold text-center text-primary dark:text-white animate-pulse">💼 The Modern Living Bonus Calculator</h1>
     </div>
 
-    <div class="bg-green-50 dark:bg-green-900 p-4 rounded mb-6">
-      <h2 class="text-xl font-bold mb-2 text-green-700 dark:text-green-300">🧮 Manual Bonus Calculator</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <label>Number of 5-Star Leaders: <input type="number" id="num5Star" class="w-full p-2 border rounded" title="Used for Generation Income" oninput="calculateManualBonus()" /></label>
-        <label>Number of AVPs: <input type="number" id="numAVP" class="w-full p-2 border rounded" title="Used to qualify for VP and above" oninput="calculateManualBonus()" /></label>
-        <label>Yearly Company Profit (₹): <input type="number" id="yearlyProfit" class="w-full p-2 border rounded" title="Used for Elite Bonus calculation" oninput="calculateManualBonus()" /></label>
-        <label>Direct Sales PV: <input type="number" id="directPV" class="w-full p-2 border rounded" oninput="calculateManualBonus()" /></label>
-        <label>Team PV (Level 1): <input type="number" id="level1" class="w-full p-2 border rounded" oninput="calculateManualBonus()" /></label>
-        <label>Team PV (Level 2): <input type="number" id="level2" class="w-full p-2 border rounded" oninput="calculateManualBonus()" /></label>
-        <label>Team PV (Level 3): <input type="number" id="level3" class="w-full p-2 border rounded" oninput="calculateManualBonus()" /></label>
-        <label>Team PV (Level 4): <input type="number" id="level4" class="w-full p-2 border rounded" oninput="calculateManualBonus()" /></label>
-        <label>Team PV (Level 6): <input type="number" id="level6" class="w-full p-2 border rounded" oninput="calculateManualBonus()" /></label>
+    <form class="space-y-6" oninput="calculateManualBonus()">
+      <!-- Section 1: Direct Seller -->
+      <fieldset class="border rounded-md p-4">
+        <legend class="font-bold text-lg text-green-700">🧍 Direct Sales</legend>
+        <label class="block mt-2">Direct Sales PV:
+          <input type="number" id="directPV" class="w-full p-2 border rounded mt-1" placeholder="Enter PV from your own sales" />
+        </label>
+      </fieldset>
+
+      <!-- Section 2: Team Builder -->
+      <fieldset class="border rounded-md p-4">
+        <legend class="font-bold text-lg text-blue-700">👥 Team PV (Team Retail Income)</legend>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <label>Level 1 PV: <input type="number" id="level1" class="w-full p-2 border rounded" /></label>
+          <label>Level 2 PV: <input type="number" id="level2" class="w-full p-2 border rounded" /></label>
+          <label>Level 3 PV: <input type="number" id="level3" class="w-full p-2 border rounded" /></label>
+          <label>Level 4 PV: <input type="number" id="level4" class="w-full p-2 border rounded" /></label>
+          <label>Level 6 PV: <input type="number" id="level6" class="w-full p-2 border rounded" /></label>
+        </div>
+      </fieldset>
+
+      <!-- Section 3: Rank Calculation -->
+      <fieldset class="border rounded-md p-4">
+        <legend class="font-bold text-lg text-purple-700">🏆 Leadership Rank</legend>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Automatically calculated based on total PV from above.</p>
+        <div id="rankResult" class="font-semibold text-green-700 mt-2"></div>
+      </fieldset>
+
+      <!-- Section 4: Generation Income -->
+      <fieldset class="border rounded-md p-4">
+        <legend class="font-bold text-lg text-yellow-700">🌿 Generation Income (For 5-Star Leaders)</legend>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Auto-included if you reach 5-Star rank.</p>
+      </fieldset>
+
+      <!-- Section 5: Elite Income -->
+      <fieldset class="border rounded-md p-4">
+        <legend class="font-bold text-lg text-red-700">👑 Elite Rank Bonus (AVP to President)</legend>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <label>Number of 5-Star Leaders (Parallel): <input type="number" id="num5Star" class="w-full p-2 border rounded" /></label>
+          <label>Number of AVPs (Parallel): <input type="number" id="numAVP" class="w-full p-2 border rounded" /></label>
+          <label>Yearly Company Profit (₹): <input type="number" id="yearlyProfit" class="w-full p-2 border rounded" placeholder="Default is ₹10,00,000" /></label>
+        </div>
+      </fieldset>
+
+      <!-- Final Result -->
+      <div id="manualResult" class="mt-6 transition-all duration-300 ease-in-out bg-gray-50 dark:bg-gray-700 p-4 rounded-lg"></div>
+
+      <!-- Actions -->
+      <div class="mt-6 flex flex-wrap gap-4 justify-center">
+        <button type="reset" onclick="clearManualInputs()" class="bg-gray-600 text-white px-4 py-2 rounded">Clear</button>
+        <button type="button" onclick="downloadExcel()" class="bg-green-600 text-white px-4 py-2 rounded">📥 Export to Excel</button>
+        <button type="button" onclick="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded">📄 Export to PDF</button>
+        <button type="button" onclick="shareResult()" class="bg-blue-600 text-white px-4 py-2 rounded">🔗 Share</button>
       </div>
-      <div class="mt-4 flex gap-4">
-        <button onclick="clearManualInputs()" class="bg-gray-500 text-white px-4 py-2 rounded">Clear</button>
-      </div>
-      <div id="manualResult" class="mt-4 transition-all duration-300 ease-in-out"></div>
-    </div>
+    </form>
   </div>
 
 <script>
@@ -43,12 +80,12 @@ function calculateManualBonus() {
   const level3 = parseInt(document.getElementById('level3').value) || 0;
   const level4 = parseInt(document.getElementById('level4').value) || 0;
   const level6 = parseInt(document.getElementById('level6').value) || 0;
+  const totalPV = directPV + level1 + level2 + level3 + level4 + level6;
 
   const retailIncome = directPV * 0.08;
   const teamIncome = level1 * 0.04 + level2 * 0.03 + level3 * 0.03 + level4 * 0.02 + level6 * 0.02;
-  const totalPV = directPV + level1 + level2 + level3 + level4 + level6;
 
-  let rank = 'None';
+  let rank = 'No Rank';
   let leadershipBonus = 0;
   if (totalPV >= 9000000) { rank = '5 Star'; leadershipBonus = totalPV * 0.15; }
   else if (totalPV >= 7500000) { rank = '4 Star'; leadershipBonus = totalPV * 0.11; }
@@ -56,22 +93,19 @@ function calculateManualBonus() {
   else if (totalPV >= 4500000) { rank = '2 Star'; leadershipBonus = totalPV * 0.045; }
   else if (totalPV >= 3000000) { rank = '1 Star'; leadershipBonus = totalPV * 0.02; }
 
-  let gen1 = 0, gen2 = 0, gen3 = 0;
+  let genIncome = 0;
   if (rank === '5 Star') {
-    gen1 = totalPV * 0.02;
-    gen2 = totalPV * 0.01;
-    gen3 = totalPV * 0.005;
+    genIncome = totalPV * (0.02 + 0.01 + 0.005);
   }
 
   const yearlyProfit = parseInt(document.getElementById('yearlyProfit').value) || 1000000;
   const num5Star = parseInt(document.getElementById('num5Star').value) || 0;
   const numAVP = parseInt(document.getElementById('numAVP').value) || 0;
-  let eliteTitle = '';
+  let eliteTitle = 'None';
   let eliteBonus = 0;
-
   if (num5Star >= 3) {
     eliteTitle = 'AVP';
-    eliteBonus = yearlyProfit * 0.03;
+    eliteBonus += yearlyProfit * 0.03;
     if (num5Star >= 4) {
       eliteTitle = 'VP';
       eliteBonus += yearlyProfit * 0.02;
@@ -86,39 +120,22 @@ function calculateManualBonus() {
     }
   }
 
-  const totalIncome = retailIncome + teamIncome + leadershipBonus + gen1 + gen2 + gen3 + eliteBonus;
+  const totalIncome = retailIncome + teamIncome + leadershipBonus + genIncome + eliteBonus;
 
-  const resultBox = document.getElementById('manualResult');
-  resultBox.classList.add('animate-pulse');
-  setTimeout(() => resultBox.classList.remove('animate-pulse'), 300);
-
-  resultBox.innerHTML = `
-    <div class="space-y-2 text-sm">
-      <div>🛒 Retail Income: ₹${retailIncome.toLocaleString()}</div>
-      <div>👥 Team Income: ₹${teamIncome.toLocaleString()}</div>
-      <div>🏆 Leadership Bonus (${rank}): ₹${leadershipBonus.toLocaleString()}</div>
-      <div>🌿 Generation Income: ₹${(gen1 + gen2 + gen3).toLocaleString()}</div>
-      <div>🎖️ Elite Bonus (${eliteTitle || 'N/A'}): ₹${eliteBonus.toLocaleString()}</div>
-      <div class="font-bold text-lg text-green-700">💰 Total Income: ₹${totalIncome.toLocaleString()}</div>
-      <div class="mt-4 space-x-2">
-        <button onclick="downloadExcel()" class="bg-green-600 text-white px-4 py-2 rounded">📥 Export to Excel</button>
-        <button onclick="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded">📄 Export to PDF</button>
-        <button onclick="shareResult()" class="bg-blue-700 text-white px-4 py-2 rounded">🔗 Share</button>
-      </div>
-    </div>
+  document.getElementById('rankResult').textContent = `Rank: ${rank}`;
+  document.getElementById('manualResult').innerHTML = `
+    <p>🛍️ Retail Income: ₹${retailIncome.toLocaleString()}</p>
+    <p>🤝 Team Retail Income: ₹${teamIncome.toLocaleString()}</p>
+    <p>🌟 Leadership Bonus (${rank}): ₹${leadershipBonus.toLocaleString()}</p>
+    <p>🌿 Generation Income: ₹${genIncome.toLocaleString()}</p>
+    <p>👑 Elite Bonus (${eliteTitle}): ₹${eliteBonus.toLocaleString()}</p>
+    <p class="font-bold text-lg text-green-700 mt-2">💰 Total Income: ₹${totalIncome.toLocaleString()}</p>
   `;
 }
 
 function clearManualInputs() {
-  document.getElementById('directPV').value = '';
-  document.getElementById('level1').value = '';
-  document.getElementById('level2').value = '';
-  document.getElementById('level3').value = '';
-  document.getElementById('level4').value = '';
-  document.getElementById('level6').value = '';
-  document.getElementById('num5Star').value = '';
-  document.getElementById('numAVP').value = '';
-  document.getElementById('yearlyProfit').value = '';
+  document.querySelectorAll('input').forEach(input => input.value = '');
+  document.getElementById('rankResult').textContent = '';
   document.getElementById('manualResult').innerHTML = '';
 }
 
@@ -133,14 +150,7 @@ function downloadExcel() {
 
 function downloadPDF() {
   const element = document.getElementById('manualResult');
-  const opt = {
-    margin:       0.5,
-    filename:     'mlm_income_report.pdf',
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2 },
-    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-  };
-  html2pdf().from(element).set(opt).save();
+  html2pdf().from(element).save('mlm_income_report.pdf');
 }
 
 function shareResult() {
