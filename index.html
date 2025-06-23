@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MLM Bonus Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 p-6">
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-xl">
+    <h1 class="text-2xl font-bold mb-4 text-center">MLM Bonus Calculator</h1>
+    
+    <!-- INPUT FORM -->
+    <form id="bonusForm" class="grid grid-cols-1 gap-4">
+      <!-- User Type -->
+      <label>
+        ID Type:
+        <select id="idType" class="w-full border p-2 rounded">
+          <option value="distributor">Distributor</option>
+          <option value="customer">Customer</option>
+        </select>
+      </label>
+
+      <!-- Product Sold -->
+      <label>
+        Product Sold:
+        <select id="productType" class="w-full border p-2 rounded">
+          <option value="250000">Hydroace TT (₹2,50,000)</option>
+          <option value="300000">Hydroace UTS (₹3,00,000)</option>
+        </select>
+      </label>
+
+      <!-- Number of Products Sold -->
+      <label>
+        Number of Direct Sales:
+        <input type="number" id="directSales" value="0" min="0" class="w-full border p-2 rounded" />
+      </label>
+
+      <!-- Team Sales PV -->
+      <div class="grid grid-cols-2 gap-4">
+        <label>Level 1 Sales PV: <input type="number" id="level1" value="0" class="w-full border p-2 rounded" /></label>
+        <label>Level 2 Sales PV: <input type="number" id="level2" value="0" class="w-full border p-2 rounded" /></label>
+        <label>Level 3 Sales PV: <input type="number" id="level3" value="0" class="w-full border p-2 rounded" /></label>
+        <label>Level 4 Sales PV: <input type="number" id="level4" value="0" class="w-full border p-2 rounded" /></label>
+        <label>Level 6 Sales PV: <input type="number" id="level6" value="0" class="w-full border p-2 rounded" /></label>
+      </div>
+
+      <!-- Rank -->
+      <label>
+        Your Rank:
+        <select id="rank" class="w-full border p-2 rounded">
+          <option value="0">None</option>
+          <option value="2">1 Star (2%)</option>
+          <option value="4.5">2 Star (4.5%)</option>
+          <option value="7.5">3 Star (7.5%)</option>
+          <option value="11">4 Star (11%)</option>
+          <option value="15">5 Star (15%)</option>
+        </select>
+      </label>
+
+      <!-- Generation Income -->
+      <div class="grid grid-cols-3 gap-4">
+        <label>1st Gen 5-Star Count: <input type="number" id="gen1" value="0" class="w-full border p-2 rounded" /></label>
+        <label>2nd Gen 5-Star Count: <input type="number" id="gen2" value="0" class="w-full border p-2 rounded" /></label>
+        <label>3rd Gen 5-Star Count: <input type="number" id="gen3" value="0" class="w-full border p-2 rounded" /></label>
+      </div>
+
+      <button type="button" onclick="calculateBonus()" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Calculate</button>
+    </form>
+
+    <!-- OUTPUT -->
+    <div id="result" class="mt-6 p-4 bg-green-100 rounded hidden"></div>
+  </div>
+
+  <script>
+    function calculateBonus() {
+      const idType = document.getElementById('idType').value;
+      const productPrice = parseInt(document.getElementById('productType').value);
+      const directSales = parseInt(document.getElementById('directSales').value);
+      const level1 = parseInt(document.getElementById('level1').value);
+      const level2 = parseInt(document.getElementById('level2').value);
+      const level3 = parseInt(document.getElementById('level3').value);
+      const level4 = parseInt(document.getElementById('level4').value);
+      const level6 = parseInt(document.getElementById('level6').value);
+      const rankBonus = parseFloat(document.getElementById('rank').value);
+      const gen1 = parseInt(document.getElementById('gen1').value);
+      const gen2 = parseInt(document.getElementById('gen2').value);
+      const gen3 = parseInt(document.getElementById('gen3').value);
+
+      let retailIncome = 0;
+      if (idType === 'distributor') {
+        retailIncome = directSales * productPrice * 0.08;
+      }
+
+      const teamRetailIncome =
+        level1 * 0.04 +
+        level2 * 0.03 +
+        level3 * 0.03 +
+        level4 * 0.02 +
+        level6 * 0.02;
+
+      const totalPV = directSales * productPrice;
+      const leadershipBonus = totalPV * (rankBonus / 100);
+
+      const generationIncome =
+        totalPV * (gen1 * 0.02 + gen2 * 0.01 + gen3 * 0.005);
+
+      const totalIncome = retailIncome + teamRetailIncome + leadershipBonus + generationIncome;
+
+      document.getElementById('result').classList.remove('hidden');
+      document.getElementById('result').innerHTML = `
+        <h2 class="text-xl font-semibold mb-2">Results:</h2>
+        <p>Retail Income: ₹${retailIncome.toFixed(2)}</p>
+        <p>Team Retail Income: ₹${teamRetailIncome.toFixed(2)}</p>
+        <p>Leadership Bonus: ₹${leadershipBonus.toFixed(2)}</p>
+        <p>Generation Income: ₹${generationIncome.toFixed(2)}</p>
+        <hr class="my-2" />
+        <p class="text-lg font-bold">Total Bonus: ₹${totalIncome.toFixed(2)}</p>
+      `;
+    }
+  </script>
+</body>
+</html>
