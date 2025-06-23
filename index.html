@@ -1,168 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Modern Living Bonus Calculator</title>
-  <link rel="icon" href="https://via.placeholder.com/32" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MLM Visual Bonus Tool</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    .block {
+      min-width: 120px;
+      padding: 10px;
+      background-color: #fef9c3;
+      border: 2px solid #facc15;
+      border-radius: 10px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .block:hover {
+      transform: scale(1.05);
+    }
+    .line {
+      height: 20px;
+      width: 2px;
+      background: #60a5fa;
+      margin: auto;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800 p-4 dark:bg-gray-900 dark:text-gray-200">
-  <div class="max-w-5xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl">
-    <div class="flex flex-col items-center mb-6">
-      <img src="https://via.placeholder.com/100x100?text=Logo" alt="Logo" class="mb-2 rounded-full shadow-md">
-      <h1 class="text-3xl font-extrabold text-center text-primary dark:text-white animate-pulse">💼 The Modern Living Bonus Calculator</h1>
+<body class="bg-gradient-to-r from-yellow-100 to-blue-100 text-gray-800 p-4">
+  <div class="max-w-6xl mx-auto bg-white p-6 rounded-2xl shadow-xl">
+    <h1 class="text-3xl font-bold mb-6 text-center text-yellow-600">🌟 MLM Bonus Visual Tool</h1>
+
+    <div class="mb-4 text-center">
+      <button onclick="addBlock()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded">➕ Add Member Block</button>
+      <p class="text-sm text-gray-500">Assign members under each other with product values</p>
     </div>
 
-    <form class="space-y-6" oninput="calculateManualBonus()">
-      <!-- Section 1: Direct Seller -->
-      <fieldset class="border rounded-md p-4">
-        <legend class="font-bold text-lg text-green-700">🧍 Direct Sales</legend>
-        <label class="block mt-2">Direct Sales PV:
-          <input type="number" id="directPV" class="w-full p-2 border rounded mt-1" placeholder="Enter PV from your own sales" />
+    <div id="tree" class="flex flex-wrap justify-center gap-6 mb-8"></div>
+
+    <div class="grid grid-cols-1 gap-4 mb-4">
+      <label>Direct Sales PV:
+        <input type="number" id="directPV" placeholder="100000" class="border p-2 rounded w-full">
+      </label>
+
+      <label>TML Monthly Company Profit (₹):
+        <input type="number" id="companyProfit" placeholder="100000" class="border p-2 rounded w-full">
+      </label>
+
+      <div class="grid grid-cols-3 gap-4">
+        <label>1st Gen 5-Star:
+          <input type="number" id="gen1" class="border p-2 rounded w-full">
         </label>
-      </fieldset>
-
-      <!-- Section 2: Team Builder -->
-      <fieldset class="border rounded-md p-4">
-        <legend class="font-bold text-lg text-blue-700">👥 Team PV (Team Retail Income)</legend>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <label>Level 1 PV: <input type="number" id="level1" class="w-full p-2 border rounded" /></label>
-          <label>Level 2 PV: <input type="number" id="level2" class="w-full p-2 border rounded" /></label>
-          <label>Level 3 PV: <input type="number" id="level3" class="w-full p-2 border rounded" /></label>
-          <label>Level 4 PV: <input type="number" id="level4" class="w-full p-2 border rounded" /></label>
-          <label>Level 6 PV: <input type="number" id="level6" class="w-full p-2 border rounded" /></label>
-        </div>
-      </fieldset>
-
-      <!-- Section 3: Rank Calculation -->
-      <fieldset class="border rounded-md p-4">
-        <legend class="font-bold text-lg text-purple-700">🏆 Leadership Rank</legend>
-        <p class="text-sm text-gray-600 dark:text-gray-400">Automatically calculated based on total PV from above.</p>
-        <div id="rankResult" class="font-semibold text-green-700 mt-2"></div>
-      </fieldset>
-
-      <!-- Section 4: Generation Income -->
-      <fieldset class="border rounded-md p-4">
-        <legend class="font-bold text-lg text-yellow-700">🌿 Generation Income (For 5-Star Leaders)</legend>
-        <p class="text-sm text-gray-600 dark:text-gray-400">Auto-included if you reach 5-Star rank.</p>
-      </fieldset>
-
-      <!-- Section 5: Elite Income -->
-      <fieldset class="border rounded-md p-4">
-        <legend class="font-bold text-lg text-red-700">👑 Elite Rank Bonus (AVP to President)</legend>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <label>Number of 5-Star Leaders (Parallel): <input type="number" id="num5Star" class="w-full p-2 border rounded" /></label>
-          <label>Number of AVPs (Parallel): <input type="number" id="numAVP" class="w-full p-2 border rounded" /></label>
-          <label>Yearly Company Profit (₹): <input type="number" id="yearlyProfit" class="w-full p-2 border rounded" placeholder="Default is ₹10,00,000" /></label>
-        </div>
-      </fieldset>
-
-      <!-- Final Result -->
-      <div id="manualResult" class="mt-6 transition-all duration-300 ease-in-out bg-gray-50 dark:bg-gray-700 p-4 rounded-lg"></div>
-
-      <!-- Actions -->
-      <div class="mt-6 flex flex-wrap gap-4 justify-center">
-        <button type="reset" onclick="clearManualInputs()" class="bg-gray-600 text-white px-4 py-2 rounded">Clear</button>
-        <button type="button" onclick="downloadExcel()" class="bg-green-600 text-white px-4 py-2 rounded">📥 Export to Excel</button>
-        <button type="button" onclick="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded">📄 Export to PDF</button>
-        <button type="button" onclick="shareResult()" class="bg-blue-600 text-white px-4 py-2 rounded">🔗 Share</button>
+        <label>2nd Gen 5-Star:
+          <input type="number" id="gen2" class="border p-2 rounded w-full">
+        </label>
+        <label>3rd Gen 5-Star:
+          <input type="number" id="gen3" class="border p-2 rounded w-full">
+        </label>
       </div>
-    </form>
+
+      <label>Elite Rank:
+        <select id="eliteRank" class="border p-2 rounded w-full">
+          <option value="">-- Select --</option>
+          <option value="3">AVP (3%)</option>
+          <option value="5">VP (3% + 2%)</option>
+          <option value="6">SVP (3% + 2% + 1%)</option>
+          <option value="7">President (3% + 2% + 1% + 1%)</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="text-center mb-4 flex gap-4 justify-center flex-wrap">
+      <button onclick="calculateBonuses()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded">🎯 Calculate Bonus</button>
+      <button onclick="clearAll()" class="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded">❌ Clear</button>
+      <button onclick="exportToExcel()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded">📥 Export to Excel</button>
+      <button onclick="window.print()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded">🖨️ Print / PDF</button>
+    </div>
+
+    <div id="results" class="hidden p-4 bg-green-100 rounded">
+      <h2 class="text-xl font-semibold mb-2">📊 Bonus Summary</h2>
+      <p>Total PV: ₹<span id="totalPV">0</span></p>
+      <p>Total Units: <span id="totalUnits">0</span></p>
+      <p>Retail Income (8%): ₹<span id="retail">0</span></p>
+      <p>Team Retail Income: ₹<span id="team">0</span></p>
+      <p>Leadership Rank: <span id="rankLabel">None</span></p>
+      <p>Leadership Bonus: ₹<span id="leadership">0</span></p>
+      <p>Generation Income: ₹<span id="generation">0</span></p>
+      <p>Elite Bonus: ₹<span id="elite">0</span></p>
+      <p class="font-bold text-lg">Total Bonus: ₹<span id="totalBonus">0</span></p>
+    </div>
   </div>
 
-<script>
-function calculateManualBonus() {
-  const directPV = parseInt(document.getElementById('directPV').value) || 0;
-  const level1 = parseInt(document.getElementById('level1').value) || 0;
-  const level2 = parseInt(document.getElementById('level2').value) || 0;
-  const level3 = parseInt(document.getElementById('level3').value) || 0;
-  const level4 = parseInt(document.getElementById('level4').value) || 0;
-  const level6 = parseInt(document.getElementById('level6').value) || 0;
-  const totalPV = directPV + level1 + level2 + level3 + level4 + level6;
+  <script>
+    const tree = document.getElementById('tree');
+    let blockCount = 0;
 
-  const retailIncome = directPV * 0.08;
-  const teamIncome = level1 * 0.04 + level2 * 0.03 + level3 * 0.03 + level4 * 0.02 + level6 * 0.02;
-
-  let rank = 'No Rank';
-  let leadershipBonus = 0;
-  if (totalPV >= 9000000) { rank = '5 Star'; leadershipBonus = totalPV * 0.15; }
-  else if (totalPV >= 7500000) { rank = '4 Star'; leadershipBonus = totalPV * 0.11; }
-  else if (totalPV >= 6000000) { rank = '3 Star'; leadershipBonus = totalPV * 0.075; }
-  else if (totalPV >= 4500000) { rank = '2 Star'; leadershipBonus = totalPV * 0.045; }
-  else if (totalPV >= 3000000) { rank = '1 Star'; leadershipBonus = totalPV * 0.02; }
-
-  let genIncome = 0;
-  if (rank === '5 Star') {
-    genIncome = totalPV * (0.02 + 0.01 + 0.005);
-  }
-
-  const yearlyProfit = parseInt(document.getElementById('yearlyProfit').value) || 1000000;
-  const num5Star = parseInt(document.getElementById('num5Star').value) || 0;
-  const numAVP = parseInt(document.getElementById('numAVP').value) || 0;
-  let eliteTitle = 'None';
-  let eliteBonus = 0;
-  if (num5Star >= 3) {
-    eliteTitle = 'AVP';
-    eliteBonus += yearlyProfit * 0.03;
-    if (num5Star >= 4) {
-      eliteTitle = 'VP';
-      eliteBonus += yearlyProfit * 0.02;
+    function addBlock() {
+      const div = document.createElement('div');
+      div.className = 'block';
+      div.innerHTML = `
+        <label class="block text-sm">👤 Member ${blockCount + 1}</label>
+        <select class="productValue w-full p-1 border rounded">
+          <option value="250000">TT (₹2.5L)</option>
+          <option value="300000">UTS (₹3L)</option>
+        </select>
+        <select class="level w-full p-1 mt-1 border rounded">
+          <option value="1">Level 1</option>
+          <option value="2">Level 2</option>
+          <option value="3">Level 3</option>
+          <option value="4">Level 4</option>
+          <option value="5">Level 5</option>
+          <option value="6">Level 6</option>
+        </select>`;
+      tree.appendChild(div);
+      blockCount++;
     }
-    if (num5Star >= 5) {
-      eliteTitle = 'SVP';
-      eliteBonus += yearlyProfit * 0.01;
+
+    function calculateBonuses() {
+      if (blockCount === 0) {
+        alert("Please add at least one member block before calculating.");
+        return;
+      }
+
+      let levelTotals = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0};
+      let totalUnits = 0;
+
+      document.querySelectorAll('.block').forEach(block => {
+        const value = parseInt(block.querySelector('.productValue').value);
+        const level = parseInt(block.querySelector('.level').value);
+        levelTotals[level] += value;
+        totalUnits++;
+      });
+
+      const directPV = parseFloat(document.getElementById('directPV').value) || 0;
+      const profit = parseFloat(document.getElementById('companyProfit').value) || 0;
+      const gen1 = parseInt(document.getElementById('gen1').value) || 0;
+      const gen2 = parseInt(document.getElementById('gen2').value) || 0;
+      const gen3 = parseInt(document.getElementById('gen3').value) || 0;
+      const eliteRank = parseFloat(document.getElementById('eliteRank').value) || 0;
+
+      const retail = directPV * 0.08;
+      const team = levelTotals[1]*0.04 + levelTotals[2]*0.03 + levelTotals[3]*0.03 + levelTotals[4]*0.02 + levelTotals[6]*0.02;
+      const totalPV = Object.values(levelTotals).reduce((a, b) => a + b, 0) + directPV;
+
+      let rank = 'None';
+      let percent = 0;
+      if (totalPV >= 9000000) { rank = '5-Star'; percent = 15; }
+      else if (totalPV >= 7500000) { rank = '4-Star'; percent = 11; }
+      else if (totalPV >= 6000000) { rank = '3-Star'; percent = 7.5; }
+      else if (totalPV >= 4500000) { rank = '2-Star'; percent = 4.5; }
+      else if (totalPV >= 3000000) { rank = '1-Star'; percent = 2; }
+      const leadership = totalPV * (percent / 100);
+
+      const generation = totalPV * (gen1*0.02 + gen2*0.01 + gen3*0.005);
+      const elite = profit * (eliteRank / 100);
+      const totalBonus = retail + team + leadership + generation + elite;
+
+      document.getElementById('totalPV').textContent = totalPV.toLocaleString();
+      document.getElementById('totalUnits').textContent = totalUnits;
+      document.getElementById('retail').textContent = retail.toFixed(2);
+      document.getElementById('team').textContent = team.toFixed(2);
+      document.getElementById('rankLabel').textContent = rank;
+      document.getElementById('leadership').textContent = leadership.toFixed(2);
+      document.getElementById('generation').textContent = generation.toFixed(2);
+      document.getElementById('elite').textContent = elite.toFixed(2);
+      document.getElementById('totalBonus').textContent = totalBonus.toFixed(2);
+
+      document.getElementById('results').classList.remove('hidden');
     }
-    if (numAVP >= 5) {
-      eliteTitle = 'President';
-      eliteBonus += yearlyProfit * 0.01;
+
+    function clearAll() {
+      document.getElementById('tree').innerHTML = '';
+      document.getElementById('results').classList.add('hidden');
+      document.getElementById('results').querySelectorAll('span').forEach(span => span.textContent = '0');
+      document.querySelectorAll('input').forEach(input => input.value = '');
+      blockCount = 0;
     }
-  }
 
-  const totalIncome = retailIncome + teamIncome + leadershipBonus + genIncome + eliteBonus;
-
-  document.getElementById('rankResult').textContent = `Rank: ${rank}`;
-  document.getElementById('manualResult').innerHTML = `
-    <p>🛍️ Retail Income: ₹${retailIncome.toLocaleString()}</p>
-    <p>🤝 Team Retail Income: ₹${teamIncome.toLocaleString()}</p>
-    <p>🌟 Leadership Bonus (${rank}): ₹${leadershipBonus.toLocaleString()}</p>
-    <p>🌿 Generation Income: ₹${genIncome.toLocaleString()}</p>
-    <p>👑 Elite Bonus (${eliteTitle}): ₹${eliteBonus.toLocaleString()}</p>
-    <p class="font-bold text-lg text-green-700 mt-2">💰 Total Income: ₹${totalIncome.toLocaleString()}</p>
-  `;
-}
-
-function clearManualInputs() {
-  document.querySelectorAll('input').forEach(input => input.value = '');
-  document.getElementById('rankResult').textContent = '';
-  document.getElementById('manualResult').innerHTML = '';
-}
-
-function downloadExcel() {
-  const content = document.getElementById('manualResult').innerText;
-  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'mlm_income_report.csv';
-  link.click();
-}
-
-function downloadPDF() {
-  const element = document.getElementById('manualResult');
-  html2pdf().from(element).save('mlm_income_report.pdf');
-}
-
-function shareResult() {
-  const text = 'Check out my MLM income projection using The Modern Living Calculator!';
-  const url = window.location.href;
-  if (navigator.share) {
-    navigator.share({ title: 'MLM Calculator', text, url });
-  } else {
-    alert('Share this link: ' + url);
-  }
-}
-</script>
-
+    function exportToExcel() {
+      const rows = [['Label', 'Value']];
+      document.querySelectorAll('#results span').forEach(span => {
+        rows.push([span.id, span.textContent]);
+      });
+      let csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "mlm_bonus_summary.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
 </body>
 </html>
