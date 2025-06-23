@@ -8,36 +8,29 @@
 </head>
 <body class="bg-gray-100 text-gray-800 p-6">
   <div class="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-xl">
-    <h1 class="text-2xl font-bold mb-4 text-center">The Modern Living</h1>
-    
+    <h1 class="text-2xl font-bold mb-6 text-center">MLM Bonus Calculator</h1>
+
     <form id="bonusForm" class="grid grid-cols-1 gap-4">
-      <label>ID Type:
-        <select id="idType" class="w-full border p-2 rounded">
-          <option value="distributor">Distributor</option>
-          <option value="customer">Customer</option>
-        </select>
+      <!-- Basic Info -->
+      <label>Total Units Sold:
+        <input type="number" id="totalUnits" value="0" min="0" class="w-full border p-2 rounded" />
       </label>
 
-      <label>Product Sold:
-        <select id="productType" class="w-full border p-2 rounded">
-          <option value="250000">Hydroace TT (₹2,50,000)</option>
-          <option value="300000">Hydroace UTS (₹3,00,000)</option>
-        </select>
+      <label>Direct Sales PV:
+        <input type="number" id="directPV" value="0" min="0" class="w-full border p-2 rounded" />
       </label>
 
-      <label>Number of Direct Sales:
-        <input type="number" id="directSales" value="0" min="0" class="w-full border p-2 rounded" />
-      </label>
-
+      <!-- Team Levels -->
       <div class="grid grid-cols-2 gap-4">
-        <label>Level 1 Sales PV: <input type="number" id="level1" value="0" class="w-full border p-2 rounded" /></label>
-        <label>Level 2 Sales PV: <input type="number" id="level2" value="0" class="w-full border p-2 rounded" /></label>
-        <label>Level 3 Sales PV: <input type="number" id="level3" value="0" class="w-full border p-2 rounded" /></label>
-        <label>Level 4 Sales PV: <input type="number" id="level4" value="0" class="w-full border p-2 rounded" /></label>
-        <label>Level 6 Sales PV: <input type="number" id="level6" value="0" class="w-full border p-2 rounded" /></label>
+        <label>Level 1 PV: <input type="number" id="level1" value="0" class="w-full border p-2 rounded" /></label>
+        <label>Level 2 PV: <input type="number" id="level2" value="0" class="w-full border p-2 rounded" /></label>
+        <label>Level 3 PV: <input type="number" id="level3" value="0" class="w-full border p-2 rounded" /></label>
+        <label>Level 4 PV: <input type="number" id="level4" value="0" class="w-full border p-2 rounded" /></label>
+        <label>Level 6 PV: <input type="number" id="level6" value="0" class="w-full border p-2 rounded" /></label>
       </div>
 
-      <label>Your Rank:
+      <!-- Leadership -->
+      <label>Leadership Rank:
         <select id="rank" class="w-full border p-2 rounded">
           <option value="0">None</option>
           <option value="2">1 Star (2%)</option>
@@ -48,63 +41,84 @@
         </select>
       </label>
 
+      <!-- Generation Income -->
       <div class="grid grid-cols-3 gap-4">
         <label>1st Gen 5-Star Count: <input type="number" id="gen1" value="0" class="w-full border p-2 rounded" /></label>
         <label>2nd Gen 5-Star Count: <input type="number" id="gen2" value="0" class="w-full border p-2 rounded" /></label>
         <label>3rd Gen 5-Star Count: <input type="number" id="gen3" value="0" class="w-full border p-2 rounded" /></label>
       </div>
 
-      <button type="button" onclick="calculateBonus()" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Calculate</button>
+      <!-- Elite Bonuses -->
+      <label>TML Yearly Company Profit (₹):
+        <input type="number" id="companyProfit" value="0" class="w-full border p-2 rounded" />
+      </label>
+
+      <label>Elite Rank:
+        <select id="eliteRank" class="w-full border p-2 rounded">
+          <option value="0">None</option>
+          <option value="3">AVP (3%)</option>
+          <option value="5">VP (3% + 2%)</option>
+          <option value="6">SVP (3% + 2% + 1%)</option>
+          <option value="7">President (3% + 2% + 1% + 1%)</option>
+        </select>
+      </label>
+
+      <!-- Buttons -->
+      <div class="flex gap-4 mt-4">
+        <button type="button" onclick="calculateBonus()" class="bg-blue-600 text-white px-4 py-2 rounded">Calculate</button>
+        <button type="reset" onclick="clearResult()" class="bg-gray-400 text-white px-4 py-2 rounded">Clear</button>
+      </div>
     </form>
 
+    <!-- Results -->
     <div id="result" class="mt-6 p-4 bg-green-100 rounded hidden"></div>
   </div>
 
   <script>
     function calculateBonus() {
-      const idType = document.getElementById('idType').value;
-      const productPrice = parseInt(document.getElementById('productType').value);
-      const directSales = parseInt(document.getElementById('directSales').value);
-      const level1 = parseInt(document.getElementById('level1').value);
-      const level2 = parseInt(document.getElementById('level2').value);
-      const level3 = parseInt(document.getElementById('level3').value);
-      const level4 = parseInt(document.getElementById('level4').value);
-      const level6 = parseInt(document.getElementById('level6').value);
-      const rankBonus = parseFloat(document.getElementById('rank').value);
-      const gen1 = parseInt(document.getElementById('gen1').value);
-      const gen2 = parseInt(document.getElementById('gen2').value);
-      const gen3 = parseInt(document.getElementById('gen3').value);
+      const totalUnits = parseInt(document.getElementById('totalUnits').value) || 0;
+      const directPV = parseFloat(document.getElementById('directPV').value) || 0;
+      const level1 = parseFloat(document.getElementById('level1').value) || 0;
+      const level2 = parseFloat(document.getElementById('level2').value) || 0;
+      const level3 = parseFloat(document.getElementById('level3').value) || 0;
+      const level4 = parseFloat(document.getElementById('level4').value) || 0;
+      const level6 = parseFloat(document.getElementById('level6').value) || 0;
+      const rankBonus = parseFloat(document.getElementById('rank').value) || 0;
+      const gen1 = parseInt(document.getElementById('gen1').value) || 0;
+      const gen2 = parseInt(document.getElementById('gen2').value) || 0;
+      const gen3 = parseInt(document.getElementById('gen3').value) || 0;
+      const profit = parseFloat(document.getElementById('companyProfit').value) || 0;
+      const eliteRank = parseFloat(document.getElementById('eliteRank').value) || 0;
 
-      let retailIncome = 0;
-      if (idType === 'distributor') {
-        retailIncome = directSales * productPrice * 0.08;
-      }
+      const teamIncome = level1 * 0.04 + level2 * 0.03 + level3 * 0.03 + level4 * 0.02 + level6 * 0.02;
+      const retailIncome = directPV * 0.08;
+      const totalPV = directPV + level1 + level2 + level3 + level4 + level6;
+      const leadershipIncome = totalPV * (rankBonus / 100);
+      const genIncome = totalPV * (gen1 * 0.02 + gen2 * 0.01 + gen3 * 0.005);
+      const eliteBonus = profit * (eliteRank / 100);
+      const totalBonus = retailIncome + teamIncome + leadershipIncome + genIncome + eliteBonus;
 
-      const teamRetailIncome =
-        level1 * 0.04 +
-        level2 * 0.03 +
-        level3 * 0.03 +
-        level4 * 0.02 +
-        level6 * 0.02;
-
-      const totalPV = directSales * productPrice;
-      const leadershipBonus = totalPV * (rankBonus / 100);
-
-      const generationIncome =
-        totalPV * (gen1 * 0.02 + gen2 * 0.01 + gen3 * 0.005);
-
-      const totalIncome = retailIncome + teamRetailIncome + leadershipBonus + generationIncome;
+      const result = `
+        <h2 class="text-xl font-semibold mb-2">Results:</h2>
+        <p><strong>Total Units Sold:</strong> ${totalUnits}</p>
+        <p><strong>Total PV:</strong> ₹${totalPV.toFixed(2)}</p>
+        <hr class="my-2" />
+        <p>Retail Income (8%): ₹${retailIncome.toFixed(2)}</p>
+        <p>Team Retail Income: ₹${teamIncome.toFixed(2)}</p>
+        <p>Leadership Bonus: ₹${leadershipIncome.toFixed(2)}</p>
+        <p>Generation Income: ₹${genIncome.toFixed(2)}</p>
+        <p>Elite Bonus (from Profit): ₹${eliteBonus.toFixed(2)}</p>
+        <hr class="my-2" />
+        <p class="text-lg font-bold">Total Bonus: ₹${totalBonus.toFixed(2)}</p>
+      `;
 
       document.getElementById('result').classList.remove('hidden');
-      document.getElementById('result').innerHTML = `
-        <h2 class="text-xl font-semibold mb-2">Results:</h2>
-        <p>Retail Income: ₹${retailIncome.toFixed(2)}</p>
-        <p>Team Retail Income: ₹${teamRetailIncome.toFixed(2)}</p>
-        <p>Leadership Bonus: ₹${leadershipBonus.toFixed(2)}</p>
-        <p>Generation Income: ₹${generationIncome.toFixed(2)}</p>
-        <hr class="my-2" />
-        <p class="text-lg font-bold">Total Bonus: ₹${totalIncome.toFixed(2)}</p>
-      `;
+      document.getElementById('result').innerHTML = result;
+    }
+
+    function clearResult() {
+      document.getElementById('result').classList.add('hidden');
+      document.getElementById('result').innerHTML = '';
     }
   </script>
 </body>
