@@ -101,8 +101,22 @@ simulateDownline = (function(original) {
 </div>
     </div>
 
-    <!-- Existing Form Continues Here -->
-    <!-- ... existing content unchanged ... -->
+    <!-- Manual Calculator -->
+    <div class="bg-green-50 dark:bg-green-900 p-4 rounded mb-6">
+      <h2 class="text-xl font-bold mb-2 text-green-700 dark:text-green-300">🧮 Manual Bonus Calculator</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <label>Direct Sales PV: <input type="number" id="directPV" class="w-full p-2 border rounded" /></label>
+        <label>Team PV (Level 1): <input type="number" id="level1" class="w-full p-2 border rounded" /></label>
+        <label>Team PV (Level 2): <input type="number" id="level2" class="w-full p-2 border rounded" /></label>
+        <label>Team PV (Level 3): <input type="number" id="level3" class="w-full p-2 border rounded" /></label>
+        <label>Team PV (Level 4): <input type="number" id="level4" class="w-full p-2 border rounded" /></label>
+        <label>Team PV (Level 6): <input type="number" id="level6" class="w-full p-2 border rounded" /></label>
+      </div>
+      <div class="mt-4">
+        <button onclick="calculateManualBonus()" class="bg-green-600 text-white px-4 py-2 rounded">Calculate Income</button>
+      </div>
+      <div id="manualResult" class="mt-4"></div>
+    </div>
 
     <script>
       function simulateDownline() {
@@ -164,7 +178,38 @@ simulateDownline = (function(original) {
         `;
         document.getElementById('simulationResult').classList.remove('hidden');
       }
-    </script>
+    function calculateManualBonus() {
+  const directPV = parseInt(document.getElementById('directPV').value) || 0;
+  const level1 = parseInt(document.getElementById('level1').value) || 0;
+  const level2 = parseInt(document.getElementById('level2').value) || 0;
+  const level3 = parseInt(document.getElementById('level3').value) || 0;
+  const level4 = parseInt(document.getElementById('level4').value) || 0;
+  const level6 = parseInt(document.getElementById('level6').value) || 0;
+
+  const retailIncome = directPV * 0.08;
+  const teamIncome = level1 * 0.04 + level2 * 0.03 + level3 * 0.03 + level4 * 0.02 + level6 * 0.02;
+  const totalPV = directPV + level1 + level2 + level3 + level4 + level6;
+
+  let rank = 'None';
+  let leadershipBonus = 0;
+  if (totalPV >= 9000000) { rank = '5 Star'; leadershipBonus = totalPV * 0.15; }
+  else if (totalPV >= 7500000) { rank = '4 Star'; leadershipBonus = totalPV * 0.11; }
+  else if (totalPV >= 6000000) { rank = '3 Star'; leadershipBonus = totalPV * 0.075; }
+  else if (totalPV >= 4500000) { rank = '2 Star'; leadershipBonus = totalPV * 0.045; }
+  else if (totalPV >= 3000000) { rank = '1 Star'; leadershipBonus = totalPV * 0.02; }
+
+  const totalIncome = retailIncome + teamIncome + leadershipBonus;
+
+  document.getElementById('manualResult').innerHTML = `
+    <div class="space-y-2 text-sm">
+      <div>🛒 Retail Income: ₹${retailIncome.toLocaleString()}</div>
+      <div>👥 Team Income: ₹${teamIncome.toLocaleString()}</div>
+      <div>🏆 Leadership Bonus (${rank}): ₹${leadershipBonus.toLocaleString()}</div>
+      <div class="font-bold text-lg text-green-700">💰 Total Income: ₹${totalIncome.toLocaleString()}</div>
+    </div>
+  `;
+}
+</script>
   </div>
 </body>
 </html>
