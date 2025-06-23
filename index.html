@@ -6,32 +6,34 @@
   <title>MLM Bonus Calculator</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-800 p-6">
+<body class="bg-gray-100 text-gray-800 p-4">
   <div class="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-xl">
-    <h1 class="text-2xl font-bold mb-6 text-center">MLM Bonus Calculator</h1>
+    <h1 class="text-3xl font-bold mb-4 text-center text-blue-700">💼 MLM Bonus Calculator</h1>
+
+    <!-- Preset Scenarios -->
+    <div class="mb-4">
+      <label class="font-semibold">💡 Choose a Success Scenario:</label>
+      <select onchange="applyScenario(this.value)" class="w-full p-2 border rounded">
+        <option value="">-- Select Scenario --</option>
+        <option value="beginner">Beginner</option>
+        <option value="rising">Rising Leader</option>
+        <option value="star">Star Performer</option>
+      </select>
+    </div>
 
     <form id="bonusForm" class="grid grid-cols-1 gap-4">
-      <!-- Basic Info -->
-      <label>Total Units Sold:
-        <input type="number" id="totalUnits" value="0" min="0" class="w-full border p-2 rounded" />
-      </label>
+      <label>Direct Sales PV: <input type="number" id="directPV" value="0" class="w-full p-2 border rounded" /></label>
 
-      <label>Direct Sales PV:
-        <input type="number" id="directPV" value="0" min="0" class="w-full border p-2 rounded" />
-      </label>
-
-      <!-- Team Levels -->
       <div class="grid grid-cols-2 gap-4">
-        <label>Level 1 PV: <input type="number" id="level1" value="0" class="w-full border p-2 rounded" /></label>
-        <label>Level 2 PV: <input type="number" id="level2" value="0" class="w-full border p-2 rounded" /></label>
-        <label>Level 3 PV: <input type="number" id="level3" value="0" class="w-full border p-2 rounded" /></label>
-        <label>Level 4 PV: <input type="number" id="level4" value="0" class="w-full border p-2 rounded" /></label>
-        <label>Level 6 PV: <input type="number" id="level6" value="0" class="w-full border p-2 rounded" /></label>
+        <label>Level 1 PV: <input type="number" id="level1" value="0" class="w-full p-2 border rounded" /></label>
+        <label>Level 2 PV: <input type="number" id="level2" value="0" class="w-full p-2 border rounded" /></label>
+        <label>Level 3 PV: <input type="number" id="level3" value="0" class="w-full p-2 border rounded" /></label>
+        <label>Level 4 PV: <input type="number" id="level4" value="0" class="w-full p-2 border rounded" /></label>
+        <label>Level 6 PV: <input type="number" id="level6" value="0" class="w-full p-2 border rounded" /></label>
       </div>
 
-      <!-- Leadership -->
       <label>Leadership Rank:
-        <select id="rank" class="w-full border p-2 rounded">
+        <select id="rank" class="w-full p-2 border rounded">
           <option value="0">None</option>
           <option value="2">1 Star (2%)</option>
           <option value="4.5">2 Star (4.5%)</option>
@@ -41,20 +43,16 @@
         </select>
       </label>
 
-      <!-- Generation Income -->
       <div class="grid grid-cols-3 gap-4">
-        <label>1st Gen 5-Star Count: <input type="number" id="gen1" value="0" class="w-full border p-2 rounded" /></label>
-        <label>2nd Gen 5-Star Count: <input type="number" id="gen2" value="0" class="w-full border p-2 rounded" /></label>
-        <label>3rd Gen 5-Star Count: <input type="number" id="gen3" value="0" class="w-full border p-2 rounded" /></label>
+        <label>1st Gen 5-Star Count: <input type="number" id="gen1" value="0" class="w-full p-2 border rounded" /></label>
+        <label>2nd Gen 5-Star Count: <input type="number" id="gen2" value="0" class="w-full p-2 border rounded" /></label>
+        <label>3rd Gen 5-Star Count: <input type="number" id="gen3" value="0" class="w-full p-2 border rounded" /></label>
       </div>
 
-      <!-- Elite Bonuses -->
-      <label>TML Yearly Company Profit (₹):
-        <input type="number" id="companyProfit" value="0" class="w-full border p-2 rounded" />
-      </label>
+      <label>TML Yearly Profit (₹): <input type="number" id="companyProfit" value="0" class="w-full p-2 border rounded" /></label>
 
       <label>Elite Rank:
-        <select id="eliteRank" class="w-full border p-2 rounded">
+        <select id="eliteRank" class="w-full p-2 border rounded">
           <option value="0">None</option>
           <option value="3">AVP (3%)</option>
           <option value="5">VP (3% + 2%)</option>
@@ -65,18 +63,70 @@
 
       <!-- Buttons -->
       <div class="flex gap-4 mt-4">
-        <button type="button" onclick="calculateBonus()" class="bg-blue-600 text-white px-4 py-2 rounded">Calculate</button>
-        <button type="reset" onclick="clearResult()" class="bg-gray-400 text-white px-4 py-2 rounded">Clear</button>
+        <button type="button" onclick="calculateBonus()" class="bg-green-600 text-white px-4 py-2 rounded">🚀 Calculate</button>
+        <button type="reset" onclick="clearResult()" class="bg-gray-500 text-white px-4 py-2 rounded">🔄 Clear All</button>
       </div>
     </form>
 
     <!-- Results -->
-    <div id="result" class="mt-6 p-4 bg-green-100 rounded hidden"></div>
+    <div id="result" class="mt-6 space-y-4 hidden"></div>
+
+    <div id="motivate" class="text-center mt-6 text-blue-700 font-semibold text-lg hidden">💬 Grow your network. Hit your Star Rank. Multiply your income!</div>
   </div>
 
   <script>
+    function applyScenario(type) {
+      const data = {
+        beginner: {
+          directPV: 250000,
+          level1: 100000,
+          level2: 50000,
+          level3: 25000,
+          level4: 10000,
+          level6: 5000,
+          rank: "2",
+          gen1: 0,
+          gen2: 0,
+          gen3: 0,
+          companyProfit: 1000000,
+          eliteRank: "0"
+        },
+        rising: {
+          directPV: 500000,
+          level1: 300000,
+          level2: 200000,
+          level3: 150000,
+          level4: 100000,
+          level6: 75000,
+          rank: "4.5",
+          gen1: 1,
+          gen2: 0,
+          gen3: 0,
+          companyProfit: 1500000,
+          eliteRank: "3"
+        },
+        star: {
+          directPV: 750000,
+          level1: 500000,
+          level2: 400000,
+          level3: 300000,
+          level4: 200000,
+          level6: 100000,
+          rank: "15",
+          gen1: 2,
+          gen2: 1,
+          gen3: 1,
+          companyProfit: 2000000,
+          eliteRank: "7"
+        }
+      };
+      if (!data[type]) return;
+      for (let key in data[type]) {
+        document.getElementById(key).value = data[type][key];
+      }
+    }
+
     function calculateBonus() {
-      const totalUnits = parseInt(document.getElementById('totalUnits').value) || 0;
       const directPV = parseFloat(document.getElementById('directPV').value) || 0;
       const level1 = parseFloat(document.getElementById('level1').value) || 0;
       const level2 = parseFloat(document.getElementById('level2').value) || 0;
@@ -90,35 +140,34 @@
       const profit = parseFloat(document.getElementById('companyProfit').value) || 0;
       const eliteRank = parseFloat(document.getElementById('eliteRank').value) || 0;
 
-      const teamIncome = level1 * 0.04 + level2 * 0.03 + level3 * 0.03 + level4 * 0.02 + level6 * 0.02;
-      const retailIncome = directPV * 0.08;
       const totalPV = directPV + level1 + level2 + level3 + level4 + level6;
+      const retailIncome = directPV * 0.08;
+      const teamIncome = level1 * 0.04 + level2 * 0.03 + level3 * 0.03 + level4 * 0.02 + level6 * 0.02;
       const leadershipIncome = totalPV * (rankBonus / 100);
       const genIncome = totalPV * (gen1 * 0.02 + gen2 * 0.01 + gen3 * 0.005);
       const eliteBonus = profit * (eliteRank / 100);
-      const totalBonus = retailIncome + teamIncome + leadershipIncome + genIncome + eliteBonus;
+      const total = retailIncome + teamIncome + leadershipIncome + genIncome + eliteBonus;
 
-      const result = `
-        <h2 class="text-xl font-semibold mb-2">Results:</h2>
-        <p><strong>Total Units Sold:</strong> ${totalUnits}</p>
-        <p><strong>Total PV:</strong> ₹${totalPV.toFixed(2)}</p>
-        <hr class="my-2" />
-        <p>Retail Income (8%): ₹${retailIncome.toFixed(2)}</p>
-        <p>Team Retail Income: ₹${teamIncome.toFixed(2)}</p>
-        <p>Leadership Bonus: ₹${leadershipIncome.toFixed(2)}</p>
-        <p>Generation Income: ₹${genIncome.toFixed(2)}</p>
-        <p>Elite Bonus (from Profit): ₹${eliteBonus.toFixed(2)}</p>
-        <hr class="my-2" />
-        <p class="text-lg font-bold">Total Bonus: ₹${totalBonus.toFixed(2)}</p>
+      document.getElementById('result').innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-white p-4 rounded shadow"><strong>💸 Retail Income:</strong><br> ₹${retailIncome.toFixed(2)}</div>
+          <div class="bg-white p-4 rounded shadow"><strong>👥 Team Income:</strong><br> ₹${teamIncome.toFixed(2)}</div>
+          <div class="bg-white p-4 rounded shadow"><strong>🏅 Leadership Bonus:</strong><br> ₹${leadershipIncome.toFixed(2)}</div>
+          <div class="bg-white p-4 rounded shadow"><strong>🌱 Generation Income:</strong><br> ₹${genIncome.toFixed(2)}</div>
+          <div class="bg-white p-4 rounded shadow"><strong>👑 Elite Bonus:</strong><br> ₹${eliteBonus.toFixed(2)}</div>
+        </div>
+        <div class="mt-4 text-2xl font-bold text-green-700 text-center">
+          💰 Total Bonus: ₹${total.toFixed(2)}
+        </div>
       `;
-
       document.getElementById('result').classList.remove('hidden');
-      document.getElementById('result').innerHTML = result;
+      document.getElementById('motivate').classList.remove('hidden');
     }
 
     function clearResult() {
       document.getElementById('result').classList.add('hidden');
       document.getElementById('result').innerHTML = '';
+      document.getElementById('motivate').classList.add('hidden');
     }
   </script>
 </body>
