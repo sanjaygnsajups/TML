@@ -6,16 +6,17 @@
   <title>TML Bonus Visual Tool</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     .block {
-      min-width: 100px;
-      padding: 8px;
+      min-width: 80px;
+      padding: 6px;
       background-color: #bbf7d0;
       border: 2px solid #38bdf8;
-      border-radius: 10px;
+      border-radius: 8px;
       text-align: center;
       transition: transform 0.3s ease;
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       position: relative;
     }
     .block:hover {
@@ -26,7 +27,7 @@
       color: white;
       padding: 2px 6px;
       border-radius: 5px;
-      font-size: 0.75rem;
+      font-size: 0.65rem;
       margin-top: 4px;
       cursor: pointer;
     }
@@ -40,10 +41,19 @@
       gap: 10px;
       margin-bottom: 1rem;
       flex-wrap: wrap;
+      position: relative;
     }
     .scrollable {
       max-height: 100vh;
       overflow-y: auto;
+    }
+    .connector {
+      width: 2px;
+      background: gray;
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      height: 20px;
     }
   </style>
 </head>
@@ -52,7 +62,10 @@
     <!-- Left Panel -->
     <div class="flex-1 scrollable bg-white p-6 rounded-2xl shadow-xl">
       <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-        <h1 class="text-3xl font-extrabold text-center md:text-left text-green-700">🌟 TML Bonus Visual Tool</h1>
+        <div class="flex items-center gap-2">
+          <img src="https://themodernliving.com/wp-content/uploads/2022/08/cropped-TML_Logo-180x180.png" alt="TML Logo" class="w-10 h-10">
+          <h1 class="text-2xl font-extrabold text-green-700">TML Bonus Visual Tool</h1>
+        </div>
         <button onclick="toggleDarkMode()" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">🌓 Toggle Dark Mode</button>
       </div>
 
@@ -82,6 +95,8 @@
       <div class="flex flex-wrap gap-4 mb-4">
         <button onclick="calculateBonus()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">💰 Calculate Bonus</button>
         <button onclick="exportToExcel()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded">📤 Export to Excel</button>
+        <button onclick="exportToPDF()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">📄 Export to PDF</button>
+        <button onclick="clearAll()" class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded">🧹 Clear</button>
       </div>
 
       <div id="bonusOutput" class="p-4 bg-green-100 rounded hidden"></div>
@@ -196,6 +211,25 @@
       const ws = XLSX.utils.aoa_to_sheet(ws_data);
       XLSX.utils.book_append_sheet(wb, ws, "BonusReport");
       XLSX.writeFile(wb, "TML_Bonus_Report.xlsx");
+    }
+
+    function exportToPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const lines = document.getElementById("bonusOutput").innerText.split("\n");
+      lines.forEach((line, i) => {
+        doc.text(line, 10, 10 + (i * 10));
+      });
+      doc.save("TML_Bonus_Report.pdf");
+    }
+
+    function clearAll() {
+      for (let i = 0; i <= 6; i++) {
+        document.getElementById(`level-${i}`).innerHTML = '';
+      }
+      document.getElementById("bonusOutput").innerHTML = '';
+      document.getElementById("bonusOutput").classList.add('hidden');
+      memberCount = 1;
     }
   </script>
 </body>
