@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TML Bonus Visual Tool</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     .block {
       min-width: 100px;
@@ -78,7 +79,11 @@
         </select>
       </div>
 
-      <button onclick="calculateBonus()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mb-4 w-full">💰 Calculate Bonus</button>
+      <div class="flex flex-wrap gap-4 mb-4">
+        <button onclick="calculateBonus()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">💰 Calculate Bonus</button>
+        <button onclick="exportToExcel()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded">📤 Export to Excel</button>
+      </div>
+
       <div id="bonusOutput" class="p-4 bg-green-100 rounded hidden"></div>
     </div>
 
@@ -160,6 +165,13 @@
 
       const totalBonus = retailIncome + teamBonus;
 
+      let rank = "None";
+      if (totalPV >= 9000000) rank = "5 Star";
+      else if (totalPV >= 7500000) rank = "4 Star";
+      else if (totalPV >= 6000000) rank = "3 Star";
+      else if (totalPV >= 4500000) rank = "2 Star";
+      else if (totalPV >= 3000000) rank = "1 Star";
+
       const resultDiv = document.getElementById('bonusOutput');
       resultDiv.classList.remove('hidden');
       resultDiv.innerHTML = `
@@ -167,9 +179,23 @@
         <p><strong>Total Team PV:</strong> ₹${totalPV.toLocaleString()}</p>
         <p><strong>Retail Income (8%):</strong> ₹${retailIncome.toFixed(2)}</p>
         <p><strong>Team Bonus:</strong> ₹${teamBonus.toFixed(2)}</p>
+        <p><strong>Rank Qualification:</strong> ${rank}</p>
         <hr class="my-2">
         <p class="text-xl font-semibold">Total Bonus: ₹${totalBonus.toFixed(2)}</p>
       `;
+    }
+
+    function exportToExcel() {
+      const wb = XLSX.utils.book_new();
+      const ws_data = [["Field", "Amount"]];
+      const bonusBox = document.getElementById("bonusOutput").innerText.split("\n");
+      bonusBox.forEach(line => {
+        const [label, value] = line.split(": ");
+        if (label && value) ws_data.push([label, value]);
+      });
+      const ws = XLSX.utils.aoa_to_sheet(ws_data);
+      XLSX.utils.book_append_sheet(wb, ws, "BonusReport");
+      XLSX.writeFile(wb, "TML_Bonus_Report.xlsx");
     }
   </script>
 </body>
