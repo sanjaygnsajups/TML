@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     .block {
       min-width: 70px;
@@ -49,8 +50,8 @@
     <!-- Left Panel -->
     <div class="flex-1 scrollable bg-white p-4 rounded-2xl shadow-xl">
       <div class="flex justify-between items-center mb-4">
-        <img src="data:image/png;base64,..." alt="TML Logo" class="w-28">
-        <img src="data:image/png;base64,..." alt="Ion Exchange Logo" class="w-28">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAYAAABV7bNHAAA..." alt="TML Logo" class="w-28">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAYAAABV7bNHAAA..." alt="Ion Exchange Logo" class="w-28">
       </div>
 
       <div class="mb-4">
@@ -159,7 +160,7 @@
 
       const totalPV = selfPV + totalTeamPV + directPV;
       const retailIncome = directPV * 0.08;
-      const teamIncome = totalTeamPV * 0.14; // Sum of all level percentages
+      const teamIncome = totalTeamPV * 0.14;
 
       let rankBonus = 0;
       if (totalPV >= 9000000) rankBonus = 15;
@@ -170,7 +171,6 @@
 
       const leadershipIncome = totalPV * (rankBonus / 100);
       const eliteBonus = (profit * 12) * (eliteRank / 100);
-
       const totalBonus = retailIncome + teamIncome + leadershipIncome + eliteBonus;
 
       const resultHTML = `
@@ -181,6 +181,7 @@
         <p>Elite Bonus: ₹${eliteBonus.toLocaleString()}</p>
         <hr><p class="font-bold">Total Bonus: ₹${totalBonus.toLocaleString()}</p>
       `;
+
       const resultBox = document.getElementById('results');
       resultBox.innerHTML = resultHTML;
       resultBox.classList.remove('hidden');
@@ -200,11 +201,13 @@
     }
 
     function exportToPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      doc.text("TML Bonus Summary", 10, 10);
-      doc.fromHTML(document.getElementById("results"), 10, 20);
-      doc.save("TML_Bonus_Summary.pdf");
+      html2canvas(document.getElementById("results")).then(canvas => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const imgData = canvas.toDataURL("image/png");
+        doc.addImage(imgData, 'PNG', 10, 10);
+        doc.save("TML_Bonus_Summary.pdf");
+      });
     }
   </script>
 </body>
