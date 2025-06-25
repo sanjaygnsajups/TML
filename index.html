@@ -40,16 +40,21 @@
       margin-bottom: 1rem;
       flex-wrap: wrap;
     }
+    .scrollable {
+      max-height: 100vh;
+      overflow-y: auto;
+    }
   </style>
 </head>
 <body class="bg-gradient-to-r from-green-200 to-blue-200 text-gray-800 p-4">
-  <div class="max-w-6xl mx-auto bg-white p-6 rounded-2xl shadow-xl">
-    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-      <h1 class="text-3xl font-extrabold text-center md:text-left text-green-700">🌟 TML Bonus Visual Tool</h1>
-      <button onclick="toggleDarkMode()" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">🌓 Toggle Dark Mode</button>
-    </div>
+  <div class="flex flex-col md:flex-row gap-4">
+    <!-- Left Panel -->
+    <div class="flex-1 scrollable bg-white p-6 rounded-2xl shadow-xl">
+      <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+        <h1 class="text-3xl font-extrabold text-center md:text-left text-green-700">🌟 TML Bonus Visual Tool</h1>
+        <button onclick="toggleDarkMode()" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">🌓 Toggle Dark Mode</button>
+      </div>
 
-    <div class="mb-6">
       <p class="text-lg font-semibold mb-2">Enter Your Name, Self PV and Direct Sales PV</p>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <input type="text" id="yourName" placeholder="Your Name" class="border p-2 rounded w-full">
@@ -60,7 +65,7 @@
         <input type="number" id="directPV" placeholder="Direct Sale PV" class="border p-2 rounded w-full">
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <button onclick="addBlock(true)" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">➕ Add Your Block (Level 0)</button>
         <button onclick="addBlock(false)" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">➕ Add Member Block</button>
         <select id="levelSelect" class="border p-2 rounded w-full">
@@ -74,14 +79,18 @@
       </div>
     </div>
 
-    <div id="tree">
-      <div id="level-0" class="level-container"></div>
-      <div id="level-1" class="level-container"></div>
-      <div id="level-2" class="level-container"></div>
-      <div id="level-3" class="level-container"></div>
-      <div id="level-4" class="level-container"></div>
-      <div id="level-5" class="level-container"></div>
-      <div id="level-6" class="level-container"></div>
+    <!-- Right Panel -->
+    <div class="w-full md:w-1/2 scrollable bg-white p-6 rounded-2xl shadow-xl">
+      <h2 class="text-xl font-bold mb-4 text-blue-700">👥 Genealogy Tree</h2>
+      <div id="tree">
+        <div id="level-0" class="level-container"></div>
+        <div id="level-1" class="level-container"></div>
+        <div id="level-2" class="level-container"></div>
+        <div id="level-3" class="level-container"></div>
+        <div id="level-4" class="level-container"></div>
+        <div id="level-5" class="level-container"></div>
+        <div id="level-6" class="level-container"></div>
+      </div>
     </div>
   </div>
 
