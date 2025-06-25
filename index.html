@@ -77,6 +77,9 @@
           <option value="6">Level 6</option>
         </select>
       </div>
+
+      <button onclick="calculateBonus()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mb-4 w-full">💰 Calculate Bonus</button>
+      <div id="bonusOutput" class="p-4 bg-green-100 rounded hidden"></div>
     </div>
 
     <!-- Right Panel -->
@@ -108,7 +111,6 @@
 
       const div = document.createElement('div');
       div.className = 'block';
-      if (isSelf) div.classList.add('self-block');
       div.dataset.level = level;
 
       const select = document.createElement('select');
@@ -135,6 +137,39 @@
       div.appendChild(remove);
 
       document.getElementById(`level-${level}`).appendChild(div);
+    }
+
+    function calculateBonus() {
+      const levels = [1, 2, 3, 4, 5, 6];
+      const levelPercent = { 1: 0.04, 2: 0.03, 3: 0.03, 4: 0.02, 5: 0.00, 6: 0.02 };
+
+      let totalPV = 0;
+      let teamBonus = 0;
+
+      levels.forEach(lvl => {
+        const blocks = document.querySelectorAll(`#level-${lvl} .block`);
+        blocks.forEach(block => {
+          const pv = parseInt(block.dataset.pv || 0);
+          totalPV += pv;
+          teamBonus += pv * levelPercent[lvl];
+        });
+      });
+
+      const directPV = parseInt(document.getElementById('directPV').value || 0);
+      const retailIncome = directPV * 0.08;
+
+      const totalBonus = retailIncome + teamBonus;
+
+      const resultDiv = document.getElementById('bonusOutput');
+      resultDiv.classList.remove('hidden');
+      resultDiv.innerHTML = `
+        <h3 class="text-lg font-bold mb-2">💸 Bonus Summary</h3>
+        <p><strong>Total Team PV:</strong> ₹${totalPV.toLocaleString()}</p>
+        <p><strong>Retail Income (8%):</strong> ₹${retailIncome.toFixed(2)}</p>
+        <p><strong>Team Bonus:</strong> ₹${teamBonus.toFixed(2)}</p>
+        <hr class="my-2">
+        <p class="text-xl font-semibold">Total Bonus: ₹${totalBonus.toFixed(2)}</p>
+      `;
     }
   </script>
 </body>
