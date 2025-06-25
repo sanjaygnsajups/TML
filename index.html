@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bonus Visual Tool</title>
+  <title>TML Bonus Visual Tool</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     .block {
-      min-width: 80px;
-      padding: 6px;
+      min-width: 70px;
+      padding: 4px;
       background-color: #bbf7d0;
       border: 2px solid #38bdf8;
       border-radius: 8px;
       text-align: center;
       transition: transform 0.3s ease;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       position: relative;
     }
     .block:hover {
@@ -25,87 +25,98 @@
     .remove-btn {
       background-color: #ef4444;
       color: white;
-      padding: 2px 6px;
+      padding: 2px 4px;
       border-radius: 5px;
-      font-size: 0.65rem;
-      margin-top: 4px;
+      font-size: 0.6rem;
+      margin-top: 2px;
       cursor: pointer;
-    }
-    .dark-mode {
-      background: #1e293b;
-      color: #f1f5f9;
     }
     .level-container {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin-bottom: 1rem;
+      gap: 6px;
+      margin-bottom: 0.5rem;
       flex-wrap: wrap;
-      position: relative;
     }
     .scrollable {
       max-height: 100vh;
       overflow-y: auto;
-    }
-    .connector {
-      width: 2px;
-      background: gray;
-      position: absolute;
-      left: 50%;
-      top: 100%;
-      height: 20px;
     }
   </style>
 </head>
 <body class="bg-gradient-to-r from-green-200 to-blue-200 text-gray-800 p-4">
   <div class="flex flex-col md:flex-row gap-4">
     <!-- Left Panel -->
-    <div class="flex-1 scrollable bg-white p-6 rounded-2xl shadow-xl">
-      <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-        <div class="flex items-center gap-2">
-          <img src="https://themodernliving.com/wp-content/uploads/2022/08/cropped-TML_Logo-180x180.png" alt="TML Logo" class="w-10 h-10">
-          <h1 class="text-2xl font-extrabold text-green-700">Bonus Visual Tool</h1>
-        </div>
-        <button onclick="toggleDarkMode()" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">🌓 Toggle Dark Mode</button>
+    <div class="flex-1 scrollable bg-white p-4 rounded-2xl shadow-xl">
+      <div class="flex justify-between items-center mb-4">
+        <img src="data:image/png;base64,..." alt="TML Logo" class="w-28">
+        <img src="data:image/png;base64,..." alt="Ion Exchange Logo" class="w-28">
       </div>
 
-      <p class="text-lg font-semibold mb-2">Enter Your Name, Self PV and Direct Sales PV</p>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <input type="text" id="yourName" placeholder="Your Name" class="border p-2 rounded w-full">
-        <select id="selfPV" class="border p-2 rounded w-full">
-          <option value="250000">₹2.5 Lakh</option>
-          <option value="300000">₹3 Lakh</option>
-        </select>
-        <input type="number" id="directPV" placeholder="Direct Sale PV" class="border p-2 rounded w-full">
+      <div class="mb-4">
+        <label class="block font-semibold">Your Name:
+          <input id="yourName" type="text" placeholder="Enter your name" class="w-full p-2 border rounded">
+        </label>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <button onclick="addBlock(true)" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">➕ Add Your Block (Level 0)</button>
-        <button onclick="addBlock(false)" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">➕ Add Member Block</button>
-        <select id="levelSelect" class="border p-2 rounded w-full">
-          <option value="1">Level 1</option>
-          <option value="2">Level 2</option>
-          <option value="3">Level 3</option>
-          <option value="4">Level 4</option>
-          <option value="5">Level 5</option>
-          <option value="6">Level 6</option>
-        </select>
+      <div class="flex gap-2 mb-4">
+        <label class="flex-1">Self PV:
+          <select id="selfPV" class="w-full p-2 border rounded">
+            <option value="0">Select</option>
+            <option value="250000">2.5L</option>
+            <option value="300000">3L</option>
+          </select>
+        </label>
+        <label class="flex-1">Direct Sales PV:
+          <input id="directPV" type="number" value="0" class="w-full p-2 border rounded">
+        </label>
       </div>
 
-      <div class="flex flex-wrap gap-4 mb-4">
-        <button onclick="calculateBonus()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">💰 Calculate Bonus</button>
-        <button onclick="exportToExcel()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded">📤 Export to Excel</button>
-        <button onclick="exportToPDF()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">📄 Export to PDF</button>
-        <button onclick="clearAll()" class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded">🧹 Clear</button>
+      <div class="mb-4">
+        <label class="block font-semibold">Add Member Block:
+          <select id="blockLevel" class="p-2 border rounded">
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+            <option value="4">Level 4</option>
+            <option value="5">Level 5</option>
+            <option value="6">Level 6</option>
+          </select>
+          <button onclick="addBlock()" class="ml-2 bg-blue-500 text-white px-3 py-1 rounded">Add Block</button>
+        </label>
       </div>
 
-      <div id="bonusOutput" class="p-4 bg-green-100 rounded hidden"></div>
+      <div class="mb-4">
+        <label class="block font-semibold">TML Monthly Company Profit (₹):
+          <input id="companyProfit" type="number" value="0" class="w-full p-2 border rounded">
+        </label>
+      </div>
+
+      <div class="mb-4">
+        <label class="block font-semibold">Elite Rank:
+          <select id="eliteRank" class="w-full p-2 border rounded">
+            <option value="0">None</option>
+            <option value="3">AVP (3%)</option>
+            <option value="5">VP (3% + 2%)</option>
+            <option value="6">SVP (3% + 2% + 1%)</option>
+            <option value="7">President (3% + 2% + 1% + 1%)</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="flex flex-wrap gap-2 mb-4">
+        <button onclick="calculateBonus()" class="bg-green-600 text-white px-4 py-2 rounded">Calculate Bonus</button>
+        <button onclick="clearAll()" class="bg-gray-500 text-white px-4 py-2 rounded">Clear</button>
+        <button onclick="exportToPDF()" class="bg-red-500 text-white px-4 py-2 rounded">Export PDF</button>
+      </div>
+
+      <div id="results" class="bg-green-100 p-3 rounded hidden"></div>
     </div>
 
-    <!-- Right Panel -->
-    <div class="w-full md:w-1/2 scrollable bg-white p-6 rounded-2xl shadow-xl">
-      <h2 class="text-xl font-bold mb-4 text-blue-700">👥 Genealogy Tree</h2>
-      <div id="tree">
+    <!-- Right Canvas -->
+    <div class="w-full md:w-1/2 bg-white rounded-2xl shadow-xl p-4 overflow-x-auto">
+      <h2 class="text-lg font-semibold mb-2">Genealogy Tree</h2>
+      <div id="genealogyTree">
         <div id="level-0" class="level-container"></div>
         <div id="level-1" class="level-container"></div>
         <div id="level-2" class="level-container"></div>
@@ -118,118 +129,82 @@
   </div>
 
   <script>
-    let dark = false;
-    let memberCount = 1;
+    let blockCount = 1;
 
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-    }
-
-    function addBlock(isSelf) {
-      const name = isSelf ? document.getElementById('yourName').value || "You" : `Member ${memberCount++}`;
-      const level = isSelf ? 0 : parseInt(document.getElementById('levelSelect').value);
-
-      const div = document.createElement('div');
-      div.className = 'block';
-      div.dataset.level = level;
-
-      const select = document.createElement('select');
-      select.className = "border mt-1 p-1 rounded w-full text-xs";
-      select.onchange = function () {
-        div.dataset.pv = parseInt(this.value);
-      };
-      const option25 = document.createElement('option');
-      option25.value = 250000; option25.text = '₹2.5 L';
-      const option30 = document.createElement('option');
-      option30.value = 300000; option30.text = '₹3 L';
-      select.appendChild(option25);
-      select.appendChild(option30);
-      select.value = isSelf ? document.getElementById('selfPV').value : '250000';
-      div.dataset.pv = select.value;
-
-      div.innerHTML = `<strong>${name}</strong><br>Level: ${level}`;
-      div.appendChild(select);
-
-      const remove = document.createElement('div');
-      remove.className = 'remove-btn';
-      remove.innerText = 'Remove';
-      remove.onclick = () => div.remove();
-      div.appendChild(remove);
-
-      document.getElementById(`level-${level}`).appendChild(div);
+    function addBlock() {
+      const level = document.getElementById('blockLevel').value;
+      const container = document.getElementById(`level-${level}`);
+      const block = document.createElement('div');
+      block.className = 'block';
+      block.innerHTML = `
+        Member ${blockCount}<br>
+        <select class="pv-select">
+          <option value="250000">2.5L</option>
+          <option value="300000">3L</option>
+        </select>
+        <div class="remove-btn" onclick="this.parentElement.remove()">Remove</div>
+      `;
+      container.appendChild(block);
+      blockCount++;
     }
 
     function calculateBonus() {
-      const levels = [1, 2, 3, 4, 5, 6];
-      const levelPercent = { 1: 0.04, 2: 0.03, 3: 0.03, 4: 0.02, 5: 0.00, 6: 0.02 };
+      const selfPV = parseFloat(document.getElementById('selfPV').value) || 0;
+      const directPV = parseFloat(document.getElementById('directPV').value) || 0;
+      const profit = parseFloat(document.getElementById('companyProfit').value) || 0;
+      const eliteRank = parseFloat(document.getElementById('eliteRank').value) || 0;
 
-      let totalPV = 0;
-      let teamBonus = 0;
+      let totalTeamPV = 0;
+      document.querySelectorAll('.pv-select').forEach(sel => totalTeamPV += parseFloat(sel.value));
 
-      levels.forEach(lvl => {
-        const blocks = document.querySelectorAll(`#level-${lvl} .block`);
-        blocks.forEach(block => {
-          const pv = parseInt(block.dataset.pv || 0);
-          totalPV += pv;
-          teamBonus += pv * levelPercent[lvl];
-        });
-      });
-
-      const directPV = parseInt(document.getElementById('directPV').value || 0);
+      const totalPV = selfPV + totalTeamPV + directPV;
       const retailIncome = directPV * 0.08;
+      const teamIncome = totalTeamPV * 0.14; // Sum of all level percentages
 
-      const totalBonus = retailIncome + teamBonus;
+      let rankBonus = 0;
+      if (totalPV >= 9000000) rankBonus = 15;
+      else if (totalPV >= 7500000) rankBonus = 11;
+      else if (totalPV >= 6000000) rankBonus = 7.5;
+      else if (totalPV >= 4500000) rankBonus = 4.5;
+      else if (totalPV >= 3000000) rankBonus = 2;
 
-      let rank = "None";
-      if (totalPV >= 9000000) rank = "5 Star";
-      else if (totalPV >= 7500000) rank = "4 Star";
-      else if (totalPV >= 6000000) rank = "3 Star";
-      else if (totalPV >= 4500000) rank = "2 Star";
-      else if (totalPV >= 3000000) rank = "1 Star";
+      const leadershipIncome = totalPV * (rankBonus / 100);
+      const eliteBonus = (profit * 12) * (eliteRank / 100);
 
-      const resultDiv = document.getElementById('bonusOutput');
-      resultDiv.classList.remove('hidden');
-      resultDiv.innerHTML = `
-        <h3 class="text-lg font-bold mb-2">💸 Bonus Summary</h3>
-        <p><strong>Total Team PV:</strong> ₹${totalPV.toLocaleString()}</p>
-        <p><strong>Retail Income (8%):</strong> ₹${retailIncome.toFixed(2)}</p>
-        <p><strong>Team Bonus:</strong> ₹${teamBonus.toFixed(2)}</p>
-        <p><strong>Rank Qualification:</strong> ${rank}</p>
-        <hr class="my-2">
-        <p class="text-xl font-semibold">Total Bonus: ₹${totalBonus.toFixed(2)}</p>
+      const totalBonus = retailIncome + teamIncome + leadershipIncome + eliteBonus;
+
+      const resultHTML = `
+        <p><strong>Total PV:</strong> ₹${totalPV.toLocaleString()}</p>
+        <p>Retail Income (8%): ₹${retailIncome.toLocaleString()}</p>
+        <p>Team Income (14%): ₹${teamIncome.toLocaleString()}</p>
+        <p>Leadership Bonus (${rankBonus}%): ₹${leadershipIncome.toLocaleString()}</p>
+        <p>Elite Bonus: ₹${eliteBonus.toLocaleString()}</p>
+        <hr><p class="font-bold">Total Bonus: ₹${totalBonus.toLocaleString()}</p>
       `;
+      const resultBox = document.getElementById('results');
+      resultBox.innerHTML = resultHTML;
+      resultBox.classList.remove('hidden');
     }
 
-    function exportToExcel() {
-      const wb = XLSX.utils.book_new();
-      const ws_data = [["Field", "Amount"]];
-      const bonusBox = document.getElementById("bonusOutput").innerText.split("\n");
-      bonusBox.forEach(line => {
-        const [label, value] = line.split(": ");
-        if (label && value) ws_data.push([label, value]);
-      });
-      const ws = XLSX.utils.aoa_to_sheet(ws_data);
-      XLSX.utils.book_append_sheet(wb, ws, "BonusReport");
-      XLSX.writeFile(wb, "TML_Bonus_Report.xlsx");
+    function clearAll() {
+      document.getElementById('yourName').value = '';
+      document.getElementById('selfPV').value = '0';
+      document.getElementById('directPV').value = '0';
+      document.getElementById('companyProfit').value = '0';
+      document.getElementById('eliteRank').value = '0';
+      document.getElementById('results').innerHTML = '';
+      document.getElementById('results').classList.add('hidden');
+      for (let i = 1; i <= 6; i++) {
+        document.getElementById(`level-${i}`).innerHTML = '';
+      }
     }
 
     function exportToPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      const lines = document.getElementById("bonusOutput").innerText.split("\n");
-      lines.forEach((line, i) => {
-        doc.text(line, 10, 10 + (i * 10));
-      });
-      doc.save("TML_Bonus_Report.pdf");
-    }
-
-    function clearAll() {
-      for (let i = 0; i <= 6; i++) {
-        document.getElementById(`level-${i}`).innerHTML = '';
-      }
-      document.getElementById("bonusOutput").innerHTML = '';
-      document.getElementById("bonusOutput").classList.add('hidden');
-      memberCount = 1;
+      doc.text("TML Bonus Summary", 10, 10);
+      doc.fromHTML(document.getElementById("results"), 10, 20);
+      doc.save("TML_Bonus_Summary.pdf");
     }
   </script>
 </body>
