@@ -29,42 +29,41 @@
       margin-top: 4px;
       cursor: pointer;
     }
-    .line {
-      position: absolute;
-      width: 2px;
-      background-color: #4b5563;
-      left: 50%;
-      top: 100%;
-      height: 40px;
-      z-index: -1;
-    }
     .dark-mode {
       background: #1e293b;
       color: #f1f5f9;
     }
+    .level-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
-<body class="bg-gradient-to-r from-green-100 to-blue-100 text-gray-800 p-4">
+<body class="bg-gradient-to-r from-green-200 to-blue-200 text-gray-800 p-4">
   <div class="max-w-6xl mx-auto bg-white p-6 rounded-2xl shadow-xl">
-    <div class="flex justify-between items-center mb-4">
-      <h1 class="text-3xl font-bold text-green-700">🌟 TML Bonus Visual Tool</h1>
-      <button onclick="toggleDarkMode()" class="bg-black text-white px-3 py-1 rounded">🌓 Toggle Dark Mode</button>
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+      <h1 class="text-3xl font-extrabold text-center md:text-left text-green-700">🌟 TML Bonus Visual Tool</h1>
+      <button onclick="toggleDarkMode()" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">🌓 Toggle Dark Mode</button>
     </div>
 
-    <div class="mb-4">
-      <p class="text-lg font-semibold">Enter Your Name, Self PV and Direct Sales PV</p>
-      <div class="flex flex-col sm:flex-row gap-4 mb-4">
-        <input type="text" id="yourName" placeholder="Your Name" class="border p-2 rounded w-full sm:w-1/3">
-        <select id="selfPV" class="border p-2 rounded w-full sm:w-1/3">
+    <div class="mb-6">
+      <p class="text-lg font-semibold mb-2">Enter Your Name, Self PV and Direct Sales PV</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <input type="text" id="yourName" placeholder="Your Name" class="border p-2 rounded w-full">
+        <select id="selfPV" class="border p-2 rounded w-full">
           <option value="250000">₹2.5 Lakh</option>
           <option value="300000">₹3 Lakh</option>
         </select>
-        <input type="number" id="directPV" placeholder="Direct Sale PV" class="border p-2 rounded w-full sm:w-1/3">
+        <input type="number" id="directPV" placeholder="Direct Sale PV" class="border p-2 rounded w-full">
       </div>
-      <div class="flex flex-col sm:flex-row gap-4 mb-4">
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <button onclick="addBlock(true)" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">➕ Add Your Block (Level 0)</button>
         <button onclick="addBlock(false)" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">➕ Add Member Block</button>
-        <select id="levelSelect" class="border p-2 rounded">
+        <select id="levelSelect" class="border p-2 rounded w-full">
           <option value="1">Level 1</option>
           <option value="2">Level 2</option>
           <option value="3">Level 3</option>
@@ -75,54 +74,14 @@
       </div>
     </div>
 
-    <div id="tree" class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-8"></div>
-
-    <div class="grid grid-cols-1 gap-4 mb-4">
-      <label>TML Monthly Company Profit (₹):
-        <input type="number" id="companyProfit" placeholder="100000" class="border p-2 rounded w-full">
-      </label>
-
-      <div class="grid grid-cols-3 gap-4">
-        <label>1st Gen 5-Star:
-          <input type="number" id="gen1" class="border p-2 rounded w-full">
-        </label>
-        <label>2nd Gen 5-Star:
-          <input type="number" id="gen2" class="border p-2 rounded w-full">
-        </label>
-        <label>3rd Gen 5-Star:
-          <input type="number" id="gen3" class="border p-2 rounded w-full">
-        </label>
-      </div>
-
-      <label>Elite Rank:
-        <select id="eliteRank" class="border p-2 rounded w-full">
-          <option value="">-- Select --</option>
-          <option value="3">AVP (3%)</option>
-          <option value="5">VP (3% + 2%)</option>
-          <option value="6">SVP (3% + 2% + 1%)</option>
-          <option value="7">President (3% + 2% + 1% + 1%)</option>
-        </select>
-      </label>
-    </div>
-
-    <div class="text-center mb-4 flex gap-4 justify-center flex-wrap">
-      <button onclick="calculateBonuses()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded">🎯 Calculate Bonus</button>
-      <button onclick="clearAll()" class="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded">❌ Clear</button>
-      <button onclick="exportToExcel()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded">📥 Export to Excel</button>
-      <button onclick="window.print()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded">🖨️ Print / PDF</button>
-    </div>
-
-    <div id="results" class="hidden p-4 bg-green-100 rounded">
-      <h2 class="text-xl font-semibold mb-2">📊 Bonus Summary</h2>
-      <p>Total PV: ₹<span id="totalPV">0</span></p>
-      <p>Total Units: <span id="totalUnits">0</span></p>
-      <p>Retail Income (8%): ₹<span id="retail">0</span></p>
-      <p>Team Retail Income: ₹<span id="team">0</span></p>
-      <p>Leadership Rank: <span id="rankLabel">None</span></p>
-      <p>Leadership Bonus: ₹<span id="leadership">0</span></p>
-      <p>Generation Income: ₹<span id="generation">0</span></p>
-      <p>Elite Bonus: ₹<span id="elite">0</span></p>
-      <p class="font-bold text-lg">Total Bonus: ₹<span id="totalBonus">0</span></p>
+    <div id="tree">
+      <div id="level-0" class="level-container"></div>
+      <div id="level-1" class="level-container"></div>
+      <div id="level-2" class="level-container"></div>
+      <div id="level-3" class="level-container"></div>
+      <div id="level-4" class="level-container"></div>
+      <div id="level-5" class="level-container"></div>
+      <div id="level-6" class="level-container"></div>
     </div>
   </div>
 
@@ -165,64 +124,8 @@
       remove.innerText = 'Remove';
       remove.onclick = () => div.remove();
       div.appendChild(remove);
-      div.appendChild(document.createElement('div')).className = 'line';
 
-      document.getElementById('tree').appendChild(div);
-    }
-
-    function calculateBonuses() {
-      const directPV = parseFloat(document.getElementById('directPV').value) || 0;
-      const blocks = document.querySelectorAll('#tree .block');
-      let teamPV = 0, units = 0;
-
-      blocks.forEach(block => {
-        const pv = parseFloat(block.dataset.pv) || 0;
-        if (!block.classList.contains('self-block')) teamPV += pv;
-        units += pv >= 250000 ? 1 : 0;
-      });
-
-      const totalPV = directPV + teamPV;
-      let rank = 'None', rankPercent = 0;
-      if (totalPV >= 9000000) { rank = '5 Star'; rankPercent = 15; }
-      else if (totalPV >= 7500000) { rank = '4 Star'; rankPercent = 11; }
-      else if (totalPV >= 6000000) { rank = '3 Star'; rankPercent = 7.5; }
-      else if (totalPV >= 4500000) { rank = '2 Star'; rankPercent = 4.5; }
-      else if (totalPV >= 3000000) { rank = '1 Star'; rankPercent = 2; }
-
-      const retailIncome = directPV * 0.08;
-      const teamIncome = teamPV * 0.04;
-      const leadershipBonus = totalPV * (rankPercent / 100);
-
-      const gen1 = parseInt(document.getElementById('gen1').value) || 0;
-      const gen2 = parseInt(document.getElementById('gen2').value) || 0;
-      const gen3 = parseInt(document.getElementById('gen3').value) || 0;
-      const genIncome = totalPV * (gen1 * 0.02 + gen2 * 0.01 + gen3 * 0.005);
-
-      const profit = parseFloat(document.getElementById('companyProfit').value) || 0;
-      const eliteVal = parseFloat(document.getElementById('eliteRank').value) || 0;
-      const eliteBonus = profit * (eliteVal / 100);
-
-      const totalBonus = retailIncome + teamIncome + leadershipBonus + genIncome + eliteBonus;
-
-      document.getElementById('totalPV').innerText = totalPV.toFixed(2);
-      document.getElementById('totalUnits').innerText = units;
-      document.getElementById('retail').innerText = retailIncome.toFixed(2);
-      document.getElementById('team').innerText = teamIncome.toFixed(2);
-      document.getElementById('rankLabel').innerText = rank;
-      document.getElementById('leadership').innerText = leadershipBonus.toFixed(2);
-      document.getElementById('generation').innerText = genIncome.toFixed(2);
-      document.getElementById('elite').innerText = eliteBonus.toFixed(2);
-      document.getElementById('totalBonus').innerText = totalBonus.toFixed(2);
-      document.getElementById('results').classList.remove('hidden');
-    }
-
-    function clearAll() {
-      document.querySelectorAll('#tree .block').forEach(el => el.remove());
-      document.getElementById('results').classList.add('hidden');
-    }
-
-    function exportToExcel() {
-      alert("Export to Excel coming soon!");
+      document.getElementById(`level-${level}`).appendChild(div);
     }
   </script>
 </body>
