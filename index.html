@@ -11,113 +11,110 @@
   <style>
     .block {
       min-width: 70px;
-      padding: 4px;
+      padding: 6px;
       background-color: #bbf7d0;
       border: 2px solid #38bdf8;
-      border-radius: 8px;
+      border-radius: 6px;
       text-align: center;
-      transition: transform 0.3s ease;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       position: relative;
-    }
-    .block:hover {
-      transform: scale(1.05);
+      animation: fadeIn 0.5s ease-in-out;
     }
     .remove-btn {
       background-color: #ef4444;
       color: white;
       padding: 2px 4px;
-      border-radius: 5px;
-      font-size: 0.6rem;
-      margin-top: 2px;
+      border-radius: 4px;
+      font-size: 0.65rem;
       cursor: pointer;
+      margin-top: 2px;
     }
     .level-container {
       display: flex;
       justify-content: center;
-      gap: 6px;
-      margin-bottom: 0.5rem;
+      gap: 10px;
+      margin-bottom: 0.75rem;
       flex-wrap: wrap;
+      position: relative;
     }
-    .scrollable {
-      max-height: 100vh;
-      overflow-y: auto;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .arrow {
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 10px solid #4b5563;
+      margin: 0 auto;
     }
   </style>
 </head>
 <body class="bg-gradient-to-r from-green-200 to-blue-200 text-gray-800 p-4">
   <div class="flex flex-col md:flex-row gap-4">
     <!-- Left Panel -->
-    <div class="flex-1 scrollable bg-white p-4 rounded-2xl shadow-xl">
+    <div class="flex-1 bg-white p-4 rounded-2xl shadow-xl">
       <div class="flex justify-between items-center mb-4">
-        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAYAAABV7bNHAAA..." alt="TML Logo" class="w-28">
-        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAYAAABV7bNHAAA..." alt="Ion Exchange Logo" class="w-28">
+        <img src="data:image/png;base64,{{TML_BASE64}}" alt="TML Logo" class="w-24">
+        <img src="data:image/png;base64,{{ION_BASE64}}" alt="Ion Exchange Logo" class="w-24">
       </div>
+      <div class="text-center text-lg font-bold mb-4">TML Bonus Visual Tool</div>
 
-      <div class="mb-4">
-        <label class="block font-semibold">Your Name:
-          <input id="yourName" type="text" placeholder="Enter your name" class="w-full p-2 border rounded">
-        </label>
+      <div class="mb-2">
+        <label class="font-semibold">Your Name: </label>
+        <input type="text" id="yourName" class="border p-1 rounded w-full" placeholder="Enter your name">
       </div>
-
-      <div class="flex gap-2 mb-4">
-        <label class="flex-1">Self PV:
-          <select id="selfPV" class="w-full p-2 border rounded">
-            <option value="0">Select</option>
-            <option value="250000">2.5L</option>
-            <option value="300000">3L</option>
-          </select>
-        </label>
-        <label class="flex-1">Direct Sales PV:
-          <input id="directPV" type="number" value="0" class="w-full p-2 border rounded">
-        </label>
+      <div class="mb-2">
+        <label class="font-semibold">Direct Sale PV:</label>
+        <select id="yourPV" class="border p-1 rounded w-full">
+          <option value="0">Select</option>
+          <option value="250000">2.5 L</option>
+          <option value="300000">3 L</option>
+        </select>
       </div>
-
-      <div class="mb-4">
-        <label class="block font-semibold">Add Member Block:
-          <select id="blockLevel" class="p-2 border rounded">
-            <option value="1">Level 1</option>
-            <option value="2">Level 2</option>
-            <option value="3">Level 3</option>
-            <option value="4">Level 4</option>
-            <option value="5">Level 5</option>
-            <option value="6">Level 6</option>
-          </select>
-          <button onclick="addBlock()" class="ml-2 bg-blue-500 text-white px-3 py-1 rounded">Add Block</button>
-        </label>
+      <div class="flex gap-2 mb-2">
+        <select id="memberLevel" class="border p-1 rounded">
+          <option value="1">Level 1</option>
+          <option value="2">Level 2</option>
+          <option value="3">Level 3</option>
+          <option value="4">Level 4</option>
+          <option value="5">Level 5</option>
+          <option value="6">Level 6</option>
+        </select>
+        <select id="memberPV" class="border p-1 rounded">
+          <option value="250000">2.5 L</option>
+          <option value="300000">3 L</option>
+        </select>
+        <button onclick="addBlock()" class="bg-green-600 text-white px-2 py-1 rounded">Add Member Block</button>
       </div>
-
-      <div class="mb-4">
-        <label class="block font-semibold">TML Monthly Company Profit (₹):
-          <input id="companyProfit" type="number" value="0" class="w-full p-2 border rounded">
-        </label>
+      <div class="mb-2">
+        <label class="font-semibold">TML Monthly Company Profit (₹):</label>
+        <input type="number" id="monthlyProfit" class="border p-1 rounded w-full" placeholder="e.g. 1000000">
       </div>
-
-      <div class="mb-4">
-        <label class="block font-semibold">Elite Rank:
-          <select id="eliteRank" class="w-full p-2 border rounded">
-            <option value="0">None</option>
-            <option value="3">AVP (3%)</option>
-            <option value="5">VP (3% + 2%)</option>
-            <option value="6">SVP (3% + 2% + 1%)</option>
-            <option value="7">President (3% + 2% + 1% + 1%)</option>
-          </select>
-        </label>
+      <div class="mb-2">
+        <label class="font-semibold">Elite Rank:</label>
+        <select id="eliteRank" class="border p-1 rounded w-full">
+          <option value="0">None</option>
+          <option value="3">AVP (3%)</option>
+          <option value="5">VP (5%)</option>
+          <option value="6">SVP (6%)</option>
+          <option value="7">President (7%)</option>
+        </select>
       </div>
-
-      <div class="flex flex-wrap gap-2 mb-4">
-        <button onclick="calculateBonus()" class="bg-green-600 text-white px-4 py-2 rounded">Calculate Bonus</button>
+      <div class="flex gap-2 mt-3">
+        <button onclick="calculateBonus()" class="bg-blue-600 text-white px-4 py-2 rounded">Calculate Bonus</button>
         <button onclick="clearAll()" class="bg-gray-500 text-white px-4 py-2 rounded">Clear</button>
-        <button onclick="exportToPDF()" class="bg-red-500 text-white px-4 py-2 rounded">Export PDF</button>
+        <button onclick="exportPDF()" class="bg-purple-600 text-white px-4 py-2 rounded">Export PDF</button>
+        <button onclick="exportExcel()" class="bg-yellow-500 text-white px-4 py-2 rounded">Export Excel</button>
       </div>
-
-      <div id="results" class="bg-green-100 p-3 rounded hidden"></div>
+      <div id="bonusResult" class="mt-4 bg-green-100 p-4 rounded hidden"></div>
     </div>
 
-    <!-- Right Canvas -->
-    <div class="w-full md:w-1/2 bg-white rounded-2xl shadow-xl p-4 overflow-x-auto">
-      <h2 class="text-lg font-semibold mb-2">Genealogy Tree</h2>
-      <div id="genealogyTree">
+    <!-- Right Panel -->
+    <div class="w-full md:w-1/2 bg-white p-4 rounded-2xl shadow-xl overflow-x-auto">
+      <h2 class="text-lg font-bold mb-2">Genealogy Tree</h2>
+      <div id="tree">
         <div id="level-0" class="level-container"></div>
         <div id="level-1" class="level-container"></div>
         <div id="level-2" class="level-container"></div>
@@ -129,86 +126,9 @@
     </div>
   </div>
 
-  <script>
-    let blockCount = 1;
+<script>
+  // JavaScript logic to be added next for full interactivity, calculation, and visualization.
+</script>
 
-    function addBlock() {
-      const level = document.getElementById('blockLevel').value;
-      const container = document.getElementById(`level-${level}`);
-      const block = document.createElement('div');
-      block.className = 'block';
-      block.innerHTML = `
-        Member ${blockCount}<br>
-        <select class="pv-select">
-          <option value="250000">2.5L</option>
-          <option value="300000">3L</option>
-        </select>
-        <div class="remove-btn" onclick="this.parentElement.remove()">Remove</div>
-      `;
-      container.appendChild(block);
-      blockCount++;
-    }
-
-    function calculateBonus() {
-      const selfPV = parseFloat(document.getElementById('selfPV').value) || 0;
-      const directPV = parseFloat(document.getElementById('directPV').value) || 0;
-      const profit = parseFloat(document.getElementById('companyProfit').value) || 0;
-      const eliteRank = parseFloat(document.getElementById('eliteRank').value) || 0;
-
-      let totalTeamPV = 0;
-      document.querySelectorAll('.pv-select').forEach(sel => totalTeamPV += parseFloat(sel.value));
-
-      const totalPV = selfPV + totalTeamPV + directPV;
-      const retailIncome = directPV * 0.08;
-      const teamIncome = totalTeamPV * 0.14;
-
-      let rankBonus = 0;
-      if (totalPV >= 9000000) rankBonus = 15;
-      else if (totalPV >= 7500000) rankBonus = 11;
-      else if (totalPV >= 6000000) rankBonus = 7.5;
-      else if (totalPV >= 4500000) rankBonus = 4.5;
-      else if (totalPV >= 3000000) rankBonus = 2;
-
-      const leadershipIncome = totalPV * (rankBonus / 100);
-      const eliteBonus = (profit * 12) * (eliteRank / 100);
-      const totalBonus = retailIncome + teamIncome + leadershipIncome + eliteBonus;
-
-      const resultHTML = `
-        <p><strong>Total PV:</strong> ₹${totalPV.toLocaleString()}</p>
-        <p>Retail Income (8%): ₹${retailIncome.toLocaleString()}</p>
-        <p>Team Income (14%): ₹${teamIncome.toLocaleString()}</p>
-        <p>Leadership Bonus (${rankBonus}%): ₹${leadershipIncome.toLocaleString()}</p>
-        <p>Elite Bonus: ₹${eliteBonus.toLocaleString()}</p>
-        <hr><p class="font-bold">Total Bonus: ₹${totalBonus.toLocaleString()}</p>
-      `;
-
-      const resultBox = document.getElementById('results');
-      resultBox.innerHTML = resultHTML;
-      resultBox.classList.remove('hidden');
-    }
-
-    function clearAll() {
-      document.getElementById('yourName').value = '';
-      document.getElementById('selfPV').value = '0';
-      document.getElementById('directPV').value = '0';
-      document.getElementById('companyProfit').value = '0';
-      document.getElementById('eliteRank').value = '0';
-      document.getElementById('results').innerHTML = '';
-      document.getElementById('results').classList.add('hidden');
-      for (let i = 1; i <= 6; i++) {
-        document.getElementById(`level-${i}`).innerHTML = '';
-      }
-    }
-
-    function exportToPDF() {
-      html2canvas(document.getElementById("results")).then(canvas => {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const imgData = canvas.toDataURL("image/png");
-        doc.addImage(imgData, 'PNG', 10, 10);
-        doc.save("TML_Bonus_Summary.pdf");
-      });
-    }
-  </script>
 </body>
 </html>
