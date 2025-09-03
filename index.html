@@ -12,15 +12,15 @@
   .block { min-width: 70px; padding: 4px; background-color: #bbf7d0; border: 2px solid #38bdf8; border-radius: 8px; text-align: center; transition: transform 0.3s ease; font-size: 0.7rem; position: relative; cursor: grab; }
   .block:hover { transform: scale(1.05); }
   .remove-btn { background-color: #ef4444; color: white; padding: 2px 4px; border-radius: 5px; font-size: 0.6rem; margin-top: 2px; cursor: pointer; }
-  .level-container { display: flex; justify-content: center; gap: 6px; margin-bottom: 0.5rem; flex-wrap: wrap; min-height: 50px; border: 1px dashed #cbd5e1; padding: 4px; border-radius: 8px; }
+  .level-container { display: flex; justify-content: center; gap: 6px; margin-bottom: 0.5rem; flex-wrap: wrap; }
   .scrollable { max-height: 100vh; overflow-y: auto; }
   .progress-bar { background: #e5e7eb; border-radius: 8px; overflow: hidden; height: 20px; margin-top: 4px; }
   .progress-fill { background: #16a34a; height: 100%; width: 0%; transition: width 0.5s ease; }
-  .person-icon { font-size: 1rem; display: block; margin-bottom: 2px; }
 </style>
 </head>
 <body class="bg-gradient-to-r from-green-200 to-blue-200 text-gray-800 p-4">
 <div class="flex flex-col md:flex-row gap-4">
+  <!-- Left Panel -->
   <div class="flex-1 scrollable bg-white p-4 rounded-2xl shadow-xl">
     <h1 class="text-xl font-bold mb-4">TML Bonus Visual Tool</h1>
 
@@ -67,6 +67,7 @@
     <div id="results" class="bg-green-100 p-3 rounded hidden"></div>
   </div>
 
+  <!-- Right Panel -->
   <div class="w-full md:w-1/2 bg-white rounded-2xl shadow-xl p-4">
     <h2 class="text-lg font-semibold mb-2">Dashboard</h2>
     <div id="dashboard" class="space-y-2 text-sm"></div>
@@ -99,145 +100,118 @@
 let blockCount = 1;
 let lifetimeEarnings = parseFloat(localStorage.getItem('lifetimeEarnings')) || 0;
 
-function formatIndian(num){
-  let x=num.toString();
-  let lastThree=x.slice(-3);
-  let rest=x.slice(0,-3);
-  if(rest!=='') lastThree=','+lastThree;
-  return rest.replace(/\B(?=(\d{2})+(?!\d))/g,",")+lastThree;
-}
-
-function addBlock(){
+function addBlock() {
   const level = document.getElementById('blockLevel').value;
   const container = document.getElementById(`level-${level}`);
   const block = document.createElement('div');
   block.className = 'block';
   block.draggable = true;
-  block.innerHTML = `
-    <span class='person-icon'>👤</span>
-    <input type='text' placeholder='Enter Name' class='w-full mb-1 text-xs border rounded p-1'/>
-    <select class='pv-select mb-1'>
-      <option value='250000'>2,50,000</option>
-      <option value='300000'>3,00,000</option>
+  block.innerHTML = `Member ${blockCount}<br>
+    <select class="pv-select">
+      <option value="250000">2.5L</option>
+      <option value="300000">3L</option>
     </select>
-    <div class='remove-btn' onclick='this.parentElement.remove()'>Remove</div>
-  `;
-  block.addEventListener('dragstart', dragStart);
-  container.addEventListener('dragover', dragOver);
-  container.addEventListener('drop', drop);
+    <div class="remove-btn" onclick="this.parentElement.remove()">Remove</div>`;
   container.appendChild(block);
   blockCount++;
 }
 
-let dragged;
-function dragStart(e){ dragged=e.target; }
-function dragOver(e){ e.preventDefault(); }
-function drop(e){
-  e.preventDefault();
-  if(dragged){
-    e.currentTarget.appendChild(dragged);
-    calculateBonus();
-  }
-}
-
-function calculateBonus(){
+function calculateBonus() {
   const ttUnits = parseInt(document.getElementById('ttUnits').value) || 0;
   const utsUnits = parseInt(document.getElementById('utsUnits').value) || 0;
   const profit = parseFloat(document.getElementById('companyProfit').value) || 0;
   const eliteRank = parseFloat(document.getElementById('eliteRank').value) || 0;
 
-  const selfPV = (ttUnits*250000)+(utsUnits*300000);
-  const directPV=selfPV;
-  const retailIncome=directPV*0.08;
+  // Self PV
+  const selfPV = (ttUnits*250000) + (utsUnits*300000);
+  const directPV = selfPV;
+  const retailIncome = directPV*0.08;
 
-  let totalTeamPV=0;
-  document.querySelectorAll('.pv-select').forEach(sel=>{ totalTeamPV+=parseFloat(sel.value); });
-  const teamIncome=totalTeamPV*0.14;
+  // Team PV
+  let totalTeamPV = 0;
+  document.querySelectorAll('.pv-select').forEach(sel => totalTeamPV += parseFloat(sel.value));
+  const teamIncome = totalTeamPV*0.14;
 
-  let rankBonus=0;
-  if(selfPV>=9000000) rankBonus=15;
-  else if(selfPV>=7500000) rankBonus=11;
-  else if(selfPV>=6000000) rankBonus=7.5;
-  else if(selfPV>=4500000) rankBonus=4.5;
-  else if(selfPV>=3000000) rankBonus=2;
-  const leadershipIncome=selfPV*(rankBonus/100);
+  // Leadership bonus
+  let rankBonus = 0;
+  if (selfPV >= 9000000) rankBonus = 15;
+  else if (selfPV >= 7500000) rankBonus = 11;
+  else if (selfPV >= 6000000) rankBonus = 7.5;
+  else if (selfPV >= 4500000) rankBonus = 4.5;
+  else if (selfPV >= 3000000) rankBonus = 2;
+  const leadershipIncome = selfPV*(rankBonus/100);
 
-  const eliteBonus=profit*(eliteRank/100);
-  const totalBonus=retailIncome+teamIncome+leadershipIncome+eliteBonus;
+  const eliteBonus = profit*(eliteRank/100);
+  const totalBonus = retailIncome + teamIncome + leadershipIncome + eliteBonus;
 
-  lifetimeEarnings+=totalBonus;
+  // Update lifetime earnings
+  lifetimeEarnings += totalBonus;
   localStorage.setItem('lifetimeEarnings', lifetimeEarnings);
 
-  document.getElementById('results').classList.remove('hidden');
-  document.getElementById('results').innerHTML=`
-    <p>Total PV: ₹${formatIndian(selfPV)}</p>
-    <p>Retail Income: ₹${formatIndian(retailIncome)}</p>
-    <p>Team Income: ₹${formatIndian(teamIncome)}</p>
-    <p>Leadership Bonus (${rankBonus}%): ₹${formatIndian(leadershipIncome)}</p>
-    <p>Elite Bonus: ₹${formatIndian(eliteBonus)}</p>
-    <hr><p class='text-lg font-bold text-green-700'>Total Bonus: ₹${formatIndian(totalBonus)}</p>
+  // Results box
+  document.getElementById('results').innerHTML = `
+    <p>Total PV: ₹${selfPV.toLocaleString()}</p>
+    <p>Retail Income: ₹${retailIncome.toLocaleString()}</p>
+    <p>Team Income: ₹${teamIncome.toLocaleString()}</p>
+    <p>Leadership Bonus (${rankBonus}%): ₹${leadershipIncome.toLocaleString()}</p>
+    <p>Elite Bonus: ₹${eliteBonus.toLocaleString()}</p>
+    <hr>
+    <p class='text-lg font-bold text-green-700'>Total Bonus: ₹${totalBonus.toLocaleString()}</p>
   `;
 
-  let nextMilestone=3000000;
-  if(selfPV<3000000) nextMilestone=3000000;
-  else if(selfPV<4500000) nextMilestone=4500000;
-  else if(selfPV<6000000) nextMilestone=6000000;
-  else if(selfPV<7500000) nextMilestone=7500000;
-  else if(selfPV<9000000) nextMilestone=9000000;
+  // Dashboard
+  let nextMilestone = 3000000;
+  if (selfPV < 3000000) nextMilestone = 3000000;
+  else if (selfPV < 4500000) nextMilestone = 4500000;
+  else if (selfPV < 6000000) nextMilestone = 6000000;
+  else if (selfPV < 7500000) nextMilestone = 7500000;
+  else if (selfPV < 9000000) nextMilestone = 9000000;
+  else nextMilestone = 9000000;
 
-  const progressPercent=Math.min((selfPV/nextMilestone)*100,100);
+  const progressPercent = Math.min((selfPV/nextMilestone)*100,100);
 
-  document.getElementById('dashboard').innerHTML=`
-    <div class='p-3 bg-green-50 rounded shadow'>This Month's Bonus: <strong>₹${formatIndian(totalBonus)}</strong></div>
-    <div class='p-3 bg-blue-50 rounded shadow'>Retail Income: ₹${formatIndian(retailIncome)}</div>
-    <div class='p-3 bg-yellow-50 rounded shadow'>Team Income: ₹${formatIndian(teamIncome)}</div>
-    <div class='p-3 bg-purple-50 rounded shadow'>Leadership Income: ₹${formatIndian(leadershipIncome)}</div>
-    <div class='p-3 bg-pink-50 rounded shadow'>Elite Bonus: ₹${formatIndian(eliteBonus)}</div>
-    <div class='p-3 bg-gray-50 rounded shadow'>Lifetime Earnings: ₹${formatIndian(lifetimeEarnings)}</div>
-    <div class='mt-2'>Progress to Next Rank (Next Milestone: ₹${formatIndian(nextMilestone)}):
-      <div class='progress-bar'><div class='progress-fill' style='width:${progressPercent}%;'></div></div>
+  document.getElementById('dashboard').innerHTML = `
+    <div class='p-3 bg-green-50 rounded shadow'>This Month's Bonus: <strong>₹${totalBonus.toLocaleString()}</strong></div>
+    <div class='p-3 bg-blue-50 rounded shadow'>Retail Income: ₹${retailIncome.toLocaleString()}</div>
+    <div class='p-3 bg-yellow-50 rounded shadow'>Team Income: ₹${teamIncome.toLocaleString()}</div>
+    <div class='p-3 bg-purple-50 rounded shadow'>Leadership Income: ₹${leadershipIncome.toLocaleString()}</div>
+    <div class='p-3 bg-pink-50 rounded shadow'>Elite Bonus: ₹${eliteBonus.toLocaleString()}</div>
+    <div class='p-3 bg-gray-50 rounded shadow'>Lifetime Earnings: ₹${lifetimeEarnings.toLocaleString()}</div>
+    <div class='mt-2'>Progress to Next Rank (Next Milestone: ₹${nextMilestone.toLocaleString()}):
+      <div class='progress-bar'><div class='progress-fill' style='width: ${progressPercent}%;'></div></div>
       <small>${progressPercent.toFixed(1)}%</small>
     </div>
   `;
 }
 
-function clearAll(){
-  document.getElementById('yourName').value='';
-  document.getElementById('ttUnits').value='0';
-  document.getElementById('utsUnits').value='0';
-  document.getElementById('companyProfit').value='0';
-  document.getElementById('eliteRank').value='0';
-  document.getElementById('results').innerHTML='';
+function clearAll() {
+  document.getElementById('yourName').value = '';
+  document.getElementById('ttUnits').value = '0';
+  document.getElementById('utsUnits').value = '0';
+  document.getElementById('companyProfit').value = '0';
+  document.getElementById('eliteRank').value = '0';
+  document.getElementById('results').innerHTML = '';
   document.getElementById('results').classList.add('hidden');
-
-  document.getElementById('dashboard').innerHTML='';
-  for(let i=0;i<=6;i++) document.getElementById(`level-${i}`).innerHTML='';
+  document.getElementById('dashboard').innerHTML = '';
+  for (let i=0;i<=6;i++) document.getElementById(`level-${i}`).innerHTML='';
 }
 
-function exportToPDF(){
-  const wrapper=document.createElement('div');
-  wrapper.appendChild(document.getElementById('results').cloneNode(true));
-  wrapper.style.background='white';
-  html2canvas(wrapper,{scale:2,useCORS:true}).then(canvas=>{
+function exportToPDF() {
+  html2canvas(document.getElementById("results")).then(canvas => {
     const { jsPDF } = window.jspdf;
-    const doc=new jsPDF('p','mm','a4');
-    const imgData=canvas.toDataURL('image/png');
-    const imgProps=doc.getImageProperties(imgData);
-    const pdfWidth=210;
-    const pdfHeight=(imgProps.height*pdfWidth)/imgProps.width;
-    doc.addImage(imgData,'PNG',0,0,pdfWidth,pdfHeight);
-    doc.save('TML_Bonus_Summary.pdf');
+    const doc = new jsPDF();
+    const imgData = canvas.toDataURL("image/png");
+    doc.addImage(imgData, 'PNG', 10, 10);
+    doc.save("TML_Bonus_Summary.pdf");
   });
 }
 
-function exportToExcel(){
-  const tableHTML=`<table><tr><td>Total PV</td><td>Retail Income</td><td>Team Income</td><td>Leadership Bonus</td><td>Elite Bonus</td><td>Total Bonus</td></tr>`+
-  `<tr><td>${document.getElementById('results').innerText.replace(/\n/g,'</td><td>')}</td></tr></table>`;
-  const ws=XLSX.utils.table_to_sheet(new DOMParser().parseFromString(tableHTML,'text/html').querySelector('table'));
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,'Bonus Summary');
-  XLSX.writeFile(wb,'TML_Bonus_Summary.xlsx');
+function exportToExcel() {
+  const tableHTML = `<table><tr><td>Total PV</td><td>Retail Income</td><td>Team Income</td><td>Leadership Bonus</td><td>Elite Bonus</td><td>Total Bonus</td></tr>` +
+    `<tr><td>${document.getElementById('results').innerText.replace(/\n/g,'</td><td>')}</td></tr></table>`;
+  const ws = XLSX.utils.table_to_sheet(new DOMParser().parseFromString(tableHTML,'text/html').querySelector('table'));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Bonus Summary");
+  XLSX.writeFile(wb, "TML_Bonus_Summary.xlsx");
 }
 </script>
-</body>
-</html>
