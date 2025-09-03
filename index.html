@@ -2,133 +2,160 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TML Bonus Visual Tool</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>MLM Bonus Calculator</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
-    .block {
-      min-width: 70px;
-      padding: 6px;
-      background-color: #bbf7d0;
-      border: 2px solid #38bdf8;
-      border-radius: 6px;
-      text-align: center;
-      font-size: 0.75rem;
-      position: relative;
-      animation: fadeIn 0.5s ease-in-out;
-    }
-    .remove-btn {
-      background-color: #ef4444;
-      color: white;
-      padding: 2px 4px;
-      border-radius: 4px;
-      font-size: 0.65rem;
-      cursor: pointer;
-      margin-top: 2px;
-    }
-    .level-container {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 0.75rem;
-      flex-wrap: wrap;
-      position: relative;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.8); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    .arrow {
-      width: 0;
-      height: 0;
-      border-left: 5px solid transparent;
-      border-right: 5px solid transparent;
-      border-top: 10px solid #4b5563;
-      margin: 0 auto;
-    }
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f9fafb; }
+    h2 { color: #1f2937; }
+    .card { background: white; padding: 16px; margin: 12px 0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    label { font-weight: bold; display: block; margin: 8px 0 4px; }
+    input, select { padding: 6px; width: 100%; border: 1px solid #ccc; border-radius: 6px; }
+    button { margin: 8px 4px 0; padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-export { background: #10b981; color: white; }
+    .results { padding: 16px; background: #ecfdf5; border-radius: 12px; }
+    .summary-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    .summary-table th, .summary-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    .summary-table th { background: #f3f4f6; }
   </style>
 </head>
-<body class="bg-gradient-to-r from-green-200 to-blue-200 text-gray-800 p-4">
-  <div class="flex flex-col md:flex-row gap-4">
-    <!-- Left Panel -->
-    <div class="flex-1 bg-white p-4 rounded-2xl shadow-xl">
-      <div class="flex justify-between items-center mb-4">
-        <img src="data:image/png;base64,{{TML_BASE64}}" alt="TML Logo" class="w-24">
-        <img src="data:image/png;base64,{{ION_BASE64}}" alt="Ion Exchange Logo" class="w-24">
-      </div>
-      <div class="text-center text-lg font-bold mb-4">TML Bonus Visual Tool</div>
+<body>
 
-      <div class="mb-2">
-        <label class="font-semibold">Your Name: </label>
-        <input type="text" id="yourName" class="border p-1 rounded w-full" placeholder="Enter your name">
-      </div>
-      <div class="mb-2">
-        <label class="font-semibold">Direct Sale PV:</label>
-        <select id="yourPV" class="border p-1 rounded w-full">
-          <option value="0">Select</option>
-          <option value="250000">2.5 L</option>
-          <option value="300000">3 L</option>
-        </select>
-      </div>
-      <div class="flex gap-2 mb-2">
-        <select id="memberLevel" class="border p-1 rounded">
-          <option value="1">Level 1</option>
-          <option value="2">Level 2</option>
-          <option value="3">Level 3</option>
-          <option value="4">Level 4</option>
-          <option value="5">Level 5</option>
-          <option value="6">Level 6</option>
-        </select>
-        <select id="memberPV" class="border p-1 rounded">
-          <option value="250000">2.5 L</option>
-          <option value="300000">3 L</option>
-        </select>
-        <button onclick="addBlock()" class="bg-green-600 text-white px-2 py-1 rounded">Add Member Block</button>
-      </div>
-      <div class="mb-2">
-        <label class="font-semibold">TML Monthly Company Profit (₹):</label>
-        <input type="number" id="monthlyProfit" class="border p-1 rounded w-full" placeholder="e.g. 1000000">
-      </div>
-      <div class="mb-2">
-        <label class="font-semibold">Elite Rank:</label>
-        <select id="eliteRank" class="border p-1 rounded w-full">
-          <option value="0">None</option>
-          <option value="3">AVP (3%)</option>
-          <option value="5">VP (5%)</option>
-          <option value="6">SVP (6%)</option>
-          <option value="7">President (7%)</option>
-        </select>
-      </div>
-      <div class="flex gap-2 mt-3">
-        <button onclick="calculateBonus()" class="bg-blue-600 text-white px-4 py-2 rounded">Calculate Bonus</button>
-        <button onclick="clearAll()" class="bg-gray-500 text-white px-4 py-2 rounded">Clear</button>
-        <button onclick="exportPDF()" class="bg-purple-600 text-white px-4 py-2 rounded">Export PDF</button>
-        <button onclick="exportExcel()" class="bg-yellow-500 text-white px-4 py-2 rounded">Export Excel</button>
-      </div>
-      <div id="bonusResult" class="mt-4 bg-green-100 p-4 rounded hidden"></div>
-    </div>
+  <h2>MLM Bonus Calculator</h2>
 
-    <!-- Right Panel -->
-    <div class="w-full md:w-1/2 bg-white p-4 rounded-2xl shadow-xl overflow-x-auto">
-      <h2 class="text-lg font-bold mb-2">Genealogy Tree</h2>
-      <div id="tree">
-        <div id="level-0" class="level-container"></div>
-        <div id="level-1" class="level-container"></div>
-        <div id="level-2" class="level-container"></div>
-        <div id="level-3" class="level-container"></div>
-        <div id="level-4" class="level-container"></div>
-        <div id="level-5" class="level-container"></div>
-        <div id="level-6" class="level-container"></div>
-      </div>
-    </div>
+  <div class="card">
+    <label>Self PV</label>
+    <input type="number" id="selfPV" placeholder="Enter your PV">
+
+    <label>Direct PV</label>
+    <input type="number" id="directPV" placeholder="Enter direct PV">
+
+    <label>Company Profit (₹)</label>
+    <input type="number" id="companyProfit" placeholder="Enter monthly company profit">
+
+    <label>Elite Rank (%)</label>
+    <select id="eliteRank">
+      <option value="0">None</option>
+      <option value="3">AVP (3%)</option>
+      <option value="5">VP (5%)</option>
+      <option value="6">SVP (6%)</option>
+      <option value="7">President (7%)</option>
+    </select>
   </div>
 
-<script>
-  // JavaScript logic to be added next for full interactivity, calculation, and visualization.
-</script>
+  <div class="card">
+    <h3>Team PV</h3>
+    <div id="teamLevels"></div>
+  </div>
+
+  <button class="btn-primary" onclick="calculateBonus()">Calculate Bonus</button>
+  <button class="btn-export" onclick="exportExcel()">Export to Excel</button>
+  <button class="btn-export" onclick="exportPDF()">Export to PDF</button>
+
+  <div id="results" class="results hidden"></div>
+
+  <script>
+    // --- Render team levels ---
+    function renderTeamInputs() {
+      const container = document.getElementById('teamLevels');
+      container.innerHTML = '';
+      for (let i = 1; i <= 6; i++) {
+        const div = document.createElement('div');
+        div.innerHTML = `
+          <label>Level ${i} PV</label>
+          <input type="number" class="levelPV" id="level${i}" placeholder="Enter PV for Level ${i}">
+        `;
+        container.appendChild(div);
+      }
+    }
+    renderTeamInputs();
+
+    function calculateBonus() {
+      const selfPV = parseFloat(document.getElementById('selfPV').value) || 0;
+      const directPV = parseFloat(document.getElementById('directPV').value) || 0;
+      const profit = parseFloat(document.getElementById('companyProfit').value) || 0;
+      const eliteRank = parseFloat(document.getElementById('eliteRank').value) || 0;
+
+      const levelPercents = { 1: 0.04, 2: 0.03, 3: 0.03, 4: 0.02, 5: 0, 6: 0.02 };
+
+      let totalTeamPV = 0, teamIncome = 0, breakdownHTML = "";
+
+      for (let i = 1; i <= 6; i++) {
+        const levelPV = parseFloat(document.getElementById(`level${i}`).value) || 0;
+        totalTeamPV += levelPV;
+        const levelIncome = levelPV * (levelPercents[i] || 0);
+        teamIncome += levelIncome;
+
+        if (levelPercents[i] > 0) {
+          breakdownHTML += `<p>Level ${i} Income (${(levelPercents[i]*100).toFixed(0)}% of ₹${levelPV.toLocaleString()}): ₹${levelIncome.toLocaleString()}</p>`;
+        }
+      }
+
+      const totalPV = selfPV + directPV + totalTeamPV;
+      const retailIncome = directPV * 0.08;
+
+      let rankBonus = 0;
+      if (totalPV >= 9000000) rankBonus = 15;
+      else if (totalPV >= 7500000) rankBonus = 11;
+      else if (totalPV >= 6000000) rankBonus = 7.5;
+      else if (totalPV >= 4500000) rankBonus = 4.5;
+      else if (totalPV >= 3000000) rankBonus = 2;
+
+      const leadershipIncome = totalPV * (rankBonus / 100);
+      const eliteBonus = profit * (eliteRank / 100);
+
+      const totalBonus = retailIncome + teamIncome + leadershipIncome + eliteBonus;
+
+      const resultHTML = `
+        <h3>Bonus Calculation Results</h3>
+        <p><strong>Total PV:</strong> ₹${totalPV.toLocaleString()}</p>
+        <p>Retail Income (8%): ₹${retailIncome.toLocaleString()}</p>
+        <p><strong>Team Income:</strong> ₹${teamIncome.toLocaleString()}</p>
+        <div class="ml-4 text-sm text-gray-700">${breakdownHTML}</div>
+        <p>Leadership Bonus (${rankBonus}%): ₹${leadershipIncome.toLocaleString()}</p>
+        <p>Elite Bonus: ₹${eliteBonus.toLocaleString()}</p>
+        <hr>
+        <p class="text-lg font-bold text-green-700">Total Bonus: ₹${totalBonus.toLocaleString()}</p>
+
+        <h4>Summary Table</h4>
+        <table class="summary-table">
+          <tr><th>Category</th><th>Amount (₹)</th></tr>
+          <tr><td>Retail Income</td><td>${retailIncome.toLocaleString()}</td></tr>
+          <tr><td>Team Income</td><td>${teamIncome.toLocaleString()}</td></tr>
+          <tr><td>Leadership Bonus</td><td>${leadershipIncome.toLocaleString()}</td></tr>
+          <tr><td>Elite Bonus</td><td>${eliteBonus.toLocaleString()}</td></tr>
+          <tr><th>Total Bonus</th><th>${totalBonus.toLocaleString()}</th></tr>
+        </table>
+      `;
+
+      const resultBox = document.getElementById('results');
+      resultBox.innerHTML = resultHTML;
+      resultBox.classList.remove('hidden');
+    }
+
+    function exportExcel() {
+      const table = document.querySelector(".summary-table");
+      const wb = XLSX.utils.table_to_book(table, {sheet:"Bonus"});
+      XLSX.writeFile(wb, "BonusCalculation.xlsx");
+    }
+
+    async function exportPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const resultsDiv = document.getElementById("results");
+
+      await html2canvas(resultsDiv).then(canvas => {
+        const imgData = canvas.toDataURL("image/png");
+        const imgProps = doc.getImageProperties(imgData);
+        const pdfWidth = doc.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        doc.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+        doc.save("BonusCalculation.pdf");
+      });
+    }
+  </script>
 
 </body>
 </html>
